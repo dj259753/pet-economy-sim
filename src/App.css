@@ -398,6 +398,49 @@ body {
   text-align: center;
 }
 
+.strategy-guide {
+  margin-bottom: 16px;
+}
+
+.strategy-guide-intro {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: #9aa3b5;
+  line-height: 1.55;
+}
+
+.strategy-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.strategy-guide-card {
+  background: #161a22;
+  border: 1px solid #262c38;
+  border-left: 3px solid;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.strategy-guide-name {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.strategy-guide-list {
+  margin: 0;
+  padding-left: 16px;
+  color: #b8c0ce;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.strategy-guide-list li + li {
+  margin-top: 3px;
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

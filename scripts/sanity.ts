@@ -30,7 +30,7 @@ for (const o of outputs) {
   const inSum = Object.values(inc).reduce((a, b) => a + b, 0);
   const exSum = Object.values(exp).reduce((a, b) => a + b, 0);
   console.log(
-    `总收入 ${Math.round(inSum)} (打工${Math.round(inc.work)} 雇佣${Math.round(inc.hire)} 被雇佣${Math.round(inc.hiredBy)} 课程${Math.round(inc.course)} 奖学金${Math.round(inc.scholarship)} 冒险${Math.round(inc.adventure)} PK${Math.round(inc.pk)})`,
+    `总收入 ${Math.round(inSum)} (打工${Math.round(inc.work)} 雇佣${Math.round(inc.hire)} 被雇佣${Math.round(inc.hiredBy)} 课程${Math.round(inc.course)} 奖学金${Math.round(inc.scholarship)} 毕业奖${Math.round(inc.graduation)} 冒险${Math.round(inc.adventure)} PK${Math.round(inc.pk)})`,
   );
   console.log(`治病选档 低/中/高/赊: ${o.ev.sickTierCounts.join('/')}`);
   console.log(

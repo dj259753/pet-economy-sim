@@ -32,7 +32,19 @@
 
 ---
 
-## 2. 快速开始
+## 2. 在线访问（自动部署）
+
+推送到 `main` 分支后，GitHub Actions 会自动构建并发布到 GitHub Pages：
+
+**https://dj259753.github.io/pet-economy-sim/**
+
+首次需在仓库 **Settings → Pages → Build and deployment → Source** 选 **GitHub Actions**。之后每次 `git push` 约 1–2 分钟更新。
+
+线上版为只读：可加载仓库内的 `config.snapshot.json`；「保存到项目」在本地 `npm run dev` 时有效，线上会改为下载 JSON。
+
+---
+
+## 3. 快速开始
 
 ```bash
 npm install
@@ -60,7 +72,7 @@ npx tsx scripts/write-snapshot.ts  # 用代码默认值重写 public/config.snap
 
 ---
 
-## 3. 代码结构（给 AI 的定位表）
+## 4. 代码结构（给 AI 的定位表）
 
 ```
 src/
@@ -84,7 +96,7 @@ public/
 
 ---
 
-## 4. 每日模拟循环（`engine.ts` → `runSim`）
+## 5. 每日模拟循环（`engine.ts` → `runSim`）
 
 对每个模拟日 `day = 1..N`，按以下顺序执行：
 
@@ -107,7 +119,7 @@ public/
 
 ---
 
-## 5. 各玩法机制详解
+## 6. 各玩法机制详解
 
 ### 5.1 基础体力与经济
 
@@ -135,7 +147,7 @@ public/
 
 ### 5.2 成长线：学前班 + 小 / 中 / 大学
 
-**配置**：`stages[]`，每项含 `required`（毕业门数）、`scholarship`、`courses[]`。
+**配置**：`stages[]`，每项含 `required`（毕业门数）、`graduationBonus`（毕业一次性奖金）、`scholarship`、`courses[]`。
 
 #### 学前班（`phase = -1`）
 
@@ -149,7 +161,7 @@ public/
 金币 += course.baseGold
 金币 += scholarshipGain(stage.scholarship)   // 若 modules.scholarship 开启
 coursesDone++
-若 coursesDone >= stage.required → 升入下一阶段
+若 coursesDone >= stage.required → 发放 graduationBonus，升入下一阶段
 ```
 
 #### 奖学金公式（`scholarshipGain`）
@@ -182,11 +194,11 @@ score = wu×缺口武 + zhi×缺口智 + mei×缺口魅 + random×平均缺口×
 #### 毕业门数（策划原文）
 
 
-| 阶段  | 需上课数 |
-| --- | ---- |
-| 小学  | 6    |
-| 中学  | 8    |
-| 大学  | 10   |
+| 阶段  | 需上课数 | 毕业奖金 |
+| --- | ---- | ---- |
+| 小学  | 6    | 100  |
+| 中学  | 8    | 200  |
+| 大学  | 10   | 300  |
 
 
 #### 当前课程表默认值
@@ -389,7 +401,7 @@ perWork = evWorkIncome()   // 当前档位+订单的打工期望
 
 **还债**：`gold >= sickDebt + goldReserve` 时自动还清。
 
-策略参数 `sickLostWork`：中档损失的打工次数（休闲 1、普通 0.5、肝帝 0）。
+策略参数 `sickLostWork`：中档损失的打工次数（佛系/休闲 1、普通 0.5、肝帝/极端 0）。
 
 ---
 
@@ -500,17 +512,20 @@ seasonNoWinProb *= (1 - grandProb)
 
 ---
 
-## 6. 玩家策略模型（`strategies[]`）
+## 7. 玩家策略模型（`strategies[]`）
 
-模拟器用 4 种可配置 **玩家画像** 近似真实行为：
+模拟器用 5 档 **玩家画像**，核心按 **日均行动点**（学习/打工）区分；冒险·PK·装扮·抽奖不占行动点。右侧结果区顶部有各档策略说明卡片。
 
 
-| 策略   | 行动点/天 | 打工偏好 | 冒险  | PK  | 目标职业 | 抽奖         |
-| ---- | ----- | ---- | --- | --- | ---- | ---------- |
-| 休闲   | 2     | 快单   | 1   | 2   | 大明星  | 2次,起抽300   |
-| 普通   | 4     | 稳单   | 3   | 5   | 画家   | 5次,起抽5000  |
-| 肝帝   | 4     | 挂机单  | 8   | 10  | 武术家  | 12次,起抽8000 |
-| 最优贪心 | 4     | auto | 0   | 0   | 武术家  | 不抽         |
+| 策略   | 日均行动 | 打工偏好 | 冒险  | PK  | 目标职业 | 抽奖         |
+| ---- | ---- | ---- | --- | --- | ---- | ---------- |
+| 佛系   | 1    | 快单   | 0   | 0   | 大明星  | 不抽         |
+| 休闲   | 2    | 快单   | 1   | 1   | 大明星  | 1次,起抽300   |
+| 普通   | 3    | 稳单   | 2   | 3   | 画家   | 4次,起抽5000  |
+| 肝帝   | 3.3  | 挂机单  | 5   | 6   | 武术家  | 8次,起抽6000  |
+| 极端   | 4    | 挂机单  | 8   | 10  | 武术家  | 12次,起抽8000 |
+
+`dailyActions` 支持小数（如 3.3）：期望模式下约 30% 的天数多 1 次行动，长期均值 ≈ 配置值；蒙特卡洛按概率随机取整。
 
 
 **共同决策规则**（`engine.ts`）：
@@ -524,19 +539,19 @@ seasonNoWinProb *= (1 - grandProb)
 **策略专属参数**：
 
 
-| 字段                           | 含义               |
-| ---------------------------- | ---------------- |
-| `goldReserve`                | 金币安全线（默认 50）     |
+| 字段                           | 含义             |
+| ---------------------------- | -------------- |
+| `goldReserve`                | 金币安全线（默认 50）   |
 | `outfitProbs`                | B/A/S 购买意愿 0~1 |
-| `beHiredPerDay`              | 每日被雇佣次数          |
-| `selfOnlineProb`             | 被雇时上线打断概率        |
-| `sickLostWork`               | 选中档治病损失打工次数      |
-| `gachaPerDay` / `gachaFloor` | 每日抽奖上限 / 起抽存量    |
+| `beHiredPerDay`              | 每日被雇佣次数        |
+| `selfOnlineProb`             | 被雇时上线打断概率      |
+| `sickLostWork`               | 选中档治病损失打工次数    |
+| `gachaPerDay` / `gachaFloor` | 每日抽奖上限 / 起抽存量  |
 
 
 ---
 
-## 7. 模拟模式
+## 8. 模拟模式
 
 ### 7.1 期望值模式（`rng = null`）
 
@@ -563,17 +578,18 @@ seasonNoWinProb *= (1 - grandProb)
 
 ---
 
-## 8. 当前平衡快照（`DEFAULT_CONFIG` / snapshot）
+## 9. 当前平衡快照（`DEFAULT_CONFIG` / snapshot）
 
 最近一次平衡目标：**前期减压 + 后期压通胀**。
 
 
-| 策略      | 365天期末金币(EV) | 稳态日净  | 收支比   |
-| ------- | ------------ | ----- | ----- |
-| 休闲      | ~2.6w        | +92   | ~1.27 |
-| 普通      | ~10w         | +251  | ~1.43 |
-| 肝帝      | ~0.8w        | ≈0    | ~1.02 |
-| 贪心(不消费) | ~34w         | +1068 | 极高    |
+| 策略  | 365天期末金币(EV) | 稳态日净 | 收支比(约) |
+| --- | ------------ | ---- | ------ |
+| 佛系  | ~2.4w        | +132 | ~1.12  |
+| 休闲  | ~5.7w        | +204 | ~1.20  |
+| 普通  | ~7.2w        | +191 | ~1.14  |
+| 肝帝  | ~3.0w        | −13  | ~1.02  |
+| 极端  | ~0.8w        | −3   | ~1.02  |
 
 
 **调参杠杆速查**：
@@ -585,12 +601,12 @@ seasonNoWinProb *= (1 - grandProb)
 | 后期少膨胀   | `payRows` 高档↓、`gacha.price`↑、`gachaPerDay`↑、`outfitProbs`↑、S 定价↑            |
 | 体力更有压力  | 关 `modules.washKit` 或减 `friendMin/Max`                                      |
 | 抽奖回收更强  | 降大奖概率、提单抽价、降 `gachaFloor`                                                   |
-| 零消费囤币上限 | 仅「最优贪心」策略；只能靠砍产出端                                                           |
+| 零消费囤币上限 | 将 `outfitProbs`/`gachaPerDay` 置 0；只能靠砍产出端                                         |
 
 
 ---
 
-## 9. 收支记账与守恒
+## 10. 收支记账与守恒
 
 每日：
 
@@ -599,7 +615,7 @@ net = sum(income.*) - sum(expense.*)
 finalGold = initialGold + 全周期 net
 ```
 
-收入科目：`work, hire, hiredBy, course, scholarship, adventure, pk, gacha`
+收入科目：`work, hire, hiredBy, course, scholarship, graduation, adventure, pk, gacha`
 
 支出科目：`training, food, sickness, adventure, pk, outfit, gacha`
 
@@ -607,7 +623,7 @@ finalGold = initialGold + 全周期 net
 
 ---
 
-## 10. 模拟器简化与已知差异
+## 11. 模拟器简化与已知差异
 
 相对真实 QQ 宠物，本工具做了以下简化：
 
@@ -624,7 +640,7 @@ finalGold = initialGold + 全周期 net
 
 ---
 
-## 11. 给 AI 的改公式速查
+## 12. 给 AI 的改公式速查
 
 
 | 要改的行为        | 文件           | 函数/位置                                         |
@@ -648,7 +664,7 @@ finalGold = initialGold + 全周期 net
 
 ---
 
-## 12. 原始策划文档
+## 13. 原始策划文档
 
 完整策划表格（职业晋升表、各职业打工文案、原始课程表等）见项目外文件：
 

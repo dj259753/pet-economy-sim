@@ -3,7 +3,7 @@ import { DEFAULT_CONFIG } from '../src/sim/config';
 import { mulberry32, runSim } from '../src/sim/engine';
 
 const cfg = structuredClone(DEFAULT_CONFIG);
-const strat = cfg.strategies.find((s) => s.id === 'optimal')!;
+const strat = cfg.strategies.find((s) => s.id === 'hardcore')!;
 
 let deadCount = 0;
 for (let i = 0; i < 100; i++) {

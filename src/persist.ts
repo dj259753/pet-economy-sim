@@ -3,7 +3,7 @@ import { DEFAULT_CONFIG, DEFAULT_SETTINGS, OUTFIT_CATEGORIES } from './sim/confi
 
 const STORAGE_KEY = 'pet-economy-sim-v1';
 const EXPORT_VERSION = 1;
-export const SNAPSHOT_URL = '/config.snapshot.json';
+export const SNAPSHOT_URL = `${import.meta.env.BASE_URL}config.snapshot.json`;
 
 export interface PersistedState {
   version: number;
@@ -37,6 +37,24 @@ function deepMerge<T extends object>(base: T, patch: Partial<T>): T {
 }
 
 /** 旧版含 C 档装扮配置 → 迁移为 B/A/S 三档 */
+const LEGACY_FOCUS_MAP: Record<string, string> = {
+  optimal: 'hardcore',
+};
+
+function migrateStrategies(cfg: SimConfig): void {
+  if (!cfg.strategies.some((s) => s.id === 'foxi') || cfg.strategies.some((s) => s.id === 'optimal')) {
+    cfg.strategies = structuredClone(DEFAULT_CONFIG.strategies);
+  }
+}
+
+function migrateStageConfig(cfg: SimConfig): void {
+  cfg.stages.forEach((stage, i) => {
+    if (stage.graduationBonus === undefined) {
+      stage.graduationBonus = DEFAULT_CONFIG.stages[i]?.graduationBonus ?? 0;
+    }
+  });
+}
+
 function migrateOutfitConfig(cfg: SimConfig): void {
   for (const cat of OUTFIT_CATEGORIES) {
     const p = cfg.outfit.prices[cat.key] as number[];
@@ -64,11 +82,14 @@ function migrateOutfitConfig(cfg: SimConfig): void {
 function parseState(data: Partial<PersistedState>): { config: SimConfig; settings: SimSettings } {
   if (!data.config) throw new Error('无效的配置');
   const config = deepMerge(structuredClone(DEFAULT_CONFIG), data.config);
+  migrateStrategies(config);
+  migrateStageConfig(config);
   migrateOutfitConfig(config);
-  return {
-    config,
-    settings: deepMerge(DEFAULT_SETTINGS, data.settings ?? {}),
-  };
+  const settings = deepMerge(DEFAULT_SETTINGS, data.settings ?? {});
+  if (LEGACY_FOCUS_MAP[settings.focusStrategyId]) {
+    settings.focusStrategyId = LEGACY_FOCUS_MAP[settings.focusStrategyId];
+  }
+  return { config, settings };
 }
 
 export function buildPayload(config: SimConfig, settings: SimSettings): PersistedState {

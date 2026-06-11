@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-06-11T09:02:46.708Z",
+  "savedAt": "2026-06-11T09:30:57.823Z",
   "config": {
     "modules": {
       "hire": true,
@@ -16,22 +16,23 @@
     "base": {
       "staminaMax": 100,
       "decayPerDay": 12,
-      "foodCost": 10,
+      "foodCost": 20,
       "foodGain": 10,
-      "initialGold": 0,
+      "initialGold": 50,
       "dailyActionLimit": 4,
-      "tutorialGold": 200,
+      "tutorialGold": 300,
       "tutorialAttr": 1
     },
     "stages": [
       {
         "name": "小学",
         "required": 6,
+        "graduationBonus": 100,
         "scholarship": {
           "p1": 0.15,
           "amount1": 50,
           "p2": 0.35,
-          "amount2": 25
+          "amount2": 26
         },
         "courses": [
           {
@@ -77,6 +78,7 @@
       {
         "name": "中学",
         "required": 8,
+        "graduationBonus": 200,
         "scholarship": {
           "p1": 0.15,
           "amount1": 60,
@@ -154,11 +156,12 @@
       {
         "name": "大学",
         "required": 10,
+        "graduationBonus": 300,
         "scholarship": {
-          "p1": 0.1,
-          "amount1": 70,
-          "p2": 0.3,
-          "amount2": 35
+          "p1": 0.15,
+          "amount1": 80,
+          "p2": 0.35,
+          "amount2": 40
         },
         "courses": [
           {
@@ -168,7 +171,7 @@
             "mei": 3,
             "random": 0,
             "stamina": 15,
-            "baseGold": 70
+            "baseGold": 80
           },
           {
             "name": "梦境编剧课",
@@ -177,7 +180,7 @@
             "mei": 1,
             "random": 0,
             "stamina": 15,
-            "baseGold": 70
+            "baseGold": 80
           },
           {
             "name": "武术身法课",
@@ -186,7 +189,7 @@
             "mei": 0,
             "random": 0,
             "stamina": 15,
-            "baseGold": 70
+            "baseGold": 80
           },
           {
             "name": "力量觉醒课",
@@ -195,7 +198,7 @@
             "mei": 0,
             "random": 0,
             "stamina": 15,
-            "baseGold": 70
+            "baseGold": 80
           },
           {
             "name": "爪爪算法课",
@@ -204,7 +207,7 @@
             "mei": 0,
             "random": 0,
             "stamina": 15,
-            "baseGold": 70
+            "baseGold": 80
           },
           {
             "name": "舞台导演课",
@@ -213,7 +216,7 @@
             "mei": 2,
             "random": 0,
             "stamina": 15,
-            "baseGold": 70
+            "baseGold": 80
           },
           {
             "name": "公益夏令营",
@@ -230,13 +233,13 @@
       }
     ],
     "training": {
-      "cost": 100,
+      "cost": 160,
       "stamina": 20,
       "scholarship": {
         "p1": 0.1,
-        "amount1": 40,
+        "amount1": 50,
         "p2": 0.3,
-        "amount2": 20
+        "amount2": 25
       },
       "courses": [
         {
@@ -763,7 +766,7 @@
       ]
     },
     "hire": {
-      "dailyLimit": 6,
+      "dailyLimit": 5,
       "interruptProb": 0.3,
       "bonusByTier": [
         {
@@ -789,11 +792,11 @@
       ]
     },
     "hiredBy": {
-      "dailyLimit": 5
+      "dailyLimit": 3
     },
     "adventure": {
       "costGold": 10,
-      "costStamina": 0,
+      "costStamina": 10,
       "events": [
         {
           "name": "打招呼",
@@ -840,10 +843,10 @@
       ]
     },
     "pk": {
-      "stamina": 5,
-      "winProb": 0.5,
-      "winGold": 8,
-      "loseGold": 8
+      "stamina": 15,
+      "winProb": 0.7,
+      "winGold": 15,
+      "loseGold": 0
     },
     "sick": {
       "intervalDays": 21,
@@ -861,48 +864,42 @@
     "outfit": {
       "prices": {
         "hat": [
-          500,
-          750,
-          1000,
+          600,
+          800,
           3000
         ],
         "accessory": [
-          400,
+          500,
           600,
-          800,
           3000
         ],
         "clothes": [
           800,
-          1000,
-          1500,
+          1200,
           5000
         ],
         "background": [
-          600,
           600,
           1000,
           5000
         ]
       },
-      "reserve": 500,
+      "reserve": 200,
       "initialCounts": [
-        30,
-        12,
-        6,
-        2
+        25,
+        3,
+        0
       ],
       "releaseIntervalDays": [
-        7,
         14,
         30,
-        45
+        60
       ]
     },
     "gacha": {
-      "price": 130,
-      "startDay": 90,
-      "seasonDays": 90,
+      "price": 160,
+      "startDay": 70,
+      "seasonDays": 70,
       "prizes": [
         {
           "name": "终极大奖（限定外观）",
@@ -912,17 +909,17 @@
         },
         {
           "name": "金币暴击 +400",
-          "prob": 2,
+          "prob": 1,
           "gold": 400
         },
         {
           "name": "大金袋 +150",
-          "prob": 6,
+          "prob": 2,
           "gold": 150
         },
         {
           "name": "小金袋 +60",
-          "prob": 18,
+          "prob": 5,
           "gold": 60
         },
         {
@@ -939,6 +936,29 @@
     },
     "strategies": [
       {
+        "id": "foxi",
+        "name": "佛系玩家",
+        "enabled": true,
+        "color": "#94a3b8",
+        "dailyActions": 1,
+        "orderPref": "kuai",
+        "adventuresPerDay": 0,
+        "pksPerDay": 0,
+        "targetJobId": "zhentan",
+        "useHire": false,
+        "goldReserve": 50,
+        "outfitProbs": [
+          0.1,
+          0,
+          0
+        ],
+        "beHiredPerDay": 1,
+        "selfOnlineProb": 0.2,
+        "sickLostWork": 1,
+        "gachaPerDay": 0,
+        "gachaFloor": 99999
+      },
+      {
         "id": "casual",
         "name": "休闲玩家",
         "enabled": true,
@@ -946,20 +966,19 @@
         "dailyActions": 2,
         "orderPref": "kuai",
         "adventuresPerDay": 1,
-        "pksPerDay": 2,
-        "targetJobId": "mingxing",
+        "pksPerDay": 1,
+        "targetJobId": "fashi",
         "useHire": true,
         "goldReserve": 50,
         "outfitProbs": [
-          0.5,
-          0.3,
-          0.1,
+          0.25,
+          0.08,
           0
         ],
         "beHiredPerDay": 2,
         "selfOnlineProb": 0.3,
         "sickLostWork": 1,
-        "gachaPerDay": 2,
+        "gachaPerDay": 3,
         "gachaFloor": 300
       },
       {
@@ -967,23 +986,22 @@
         "name": "普通玩家",
         "enabled": true,
         "color": "#34d399",
-        "dailyActions": 4,
+        "dailyActions": 3,
         "orderPref": "wen",
-        "adventuresPerDay": 3,
-        "pksPerDay": 5,
+        "adventuresPerDay": 2,
+        "pksPerDay": 3,
         "targetJobId": "huajia",
         "useHire": true,
         "goldReserve": 50,
         "outfitProbs": [
-          0.7,
-          0.5,
-          0.3,
-          0.25
+          0.45,
+          0.25,
+          0.1
         ],
         "beHiredPerDay": 3,
         "selfOnlineProb": 0.5,
         "sickLostWork": 0.5,
-        "gachaPerDay": 5,
+        "gachaPerDay": 4,
         "gachaFloor": 5000
       },
       {
@@ -991,6 +1009,29 @@
         "name": "肝帝",
         "enabled": true,
         "color": "#fbbf24",
+        "dailyActions": 3.3,
+        "orderPref": "guaji",
+        "adventuresPerDay": 5,
+        "pksPerDay": 6,
+        "targetJobId": "wushu",
+        "useHire": true,
+        "goldReserve": 50,
+        "outfitProbs": [
+          0.65,
+          0.5,
+          0.35
+        ],
+        "beHiredPerDay": 4,
+        "selfOnlineProb": 0.7,
+        "sickLostWork": 0,
+        "gachaPerDay": 8,
+        "gachaFloor": 6000
+      },
+      {
+        "id": "hardcore",
+        "name": "极端情况",
+        "enabled": true,
+        "color": "#f87171",
         "dailyActions": 4,
         "orderPref": "guaji",
         "adventuresPerDay": 8,
@@ -999,47 +1040,22 @@
         "useHire": true,
         "goldReserve": 50,
         "outfitProbs": [
-          0.9,
-          0.8,
-          0.7,
+          0.85,
+          0.75,
           0.8
         ],
         "beHiredPerDay": 4,
-        "selfOnlineProb": 0.8,
+        "selfOnlineProb": 0.85,
         "sickLostWork": 0,
         "gachaPerDay": 12,
         "gachaFloor": 8000
-      },
-      {
-        "id": "optimal",
-        "name": "最优策略(贪心)",
-        "enabled": true,
-        "color": "#f87171",
-        "dailyActions": 4,
-        "orderPref": "auto",
-        "adventuresPerDay": 0,
-        "pksPerDay": 0,
-        "targetJobId": "wushu",
-        "useHire": true,
-        "goldReserve": 50,
-        "outfitProbs": [
-          0,
-          0,
-          0,
-          0
-        ],
-        "beHiredPerDay": 4,
-        "selfOnlineProb": 0.8,
-        "sickLostWork": 0,
-        "gachaPerDay": 0,
-        "gachaFloor": 0
       }
     ]
   },
   "settings": {
-    "days": 90,
+    "days": 240,
     "mcEnabled": true,
-    "mcRuns": 200,
+    "mcRuns": 300,
     "focusStrategyId": "normal"
   }
 }

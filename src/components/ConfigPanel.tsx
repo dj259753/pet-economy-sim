@@ -115,6 +115,12 @@ export function ConfigPanel({
                 suffix="门"
                 onChange={(v) => update((d) => (d.stages[si].required = v))}
               />
+              <NumField
+                label="毕业奖金"
+                value={stage.graduationBonus}
+                suffix="币"
+                onChange={(v) => update((d) => (d.stages[si].graduationBonus = v))}
+              />
             </Row>
             <Row>
               <NumField
@@ -822,8 +828,10 @@ function StrategyEditor({
       </div>
       <Row>
         <NumField
-          label="每日行动点"
+          label="日均行动点"
           value={strat.dailyActions}
+          step={0.1}
+          suffix="次"
           onChange={(v) => onChange((s) => (s.dailyActions = v))}
         />
         <label className="num-field">

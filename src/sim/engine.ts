@@ -33,11 +33,22 @@ const sampleIntRange = (rng: Rng, min: number, max: number): number =>
 
 const rangeMid = (range: Range): number => (range.min + range.max) / 2;
 
+/** 日均行动点（可小数）→ 当日整数次数；长期均值 ≈ target */
+function resolveDailyActions(target: number, day: number, rng: Rng): number {
+  const t = Math.max(0, target);
+  const lo = Math.floor(t);
+  const frac = t - lo;
+  if (frac < 1e-9) return lo;
+  if (rng) return lo + (rng() < frac ? 1 : 0);
+  return lo + ((day * 7 + 3) % 10 < Math.round(frac * 10) ? 1 : 0);
+}
+
 // ============ 结果类型 ============
 
 export interface IncomeBreakdown {
   course: number;
   scholarship: number;
+  graduation: number;
   work: number;
   hire: number;
   hiredBy: number; // 被雇佣分成
@@ -62,6 +73,7 @@ export const INCOME_KEYS: { key: keyof IncomeBreakdown; name: string; color: str
   { key: 'hiredBy', name: '被雇佣分成', color: '#0d9488' },
   { key: 'course', name: '课程保底', color: '#2563eb' },
   { key: 'scholarship', name: '奖学金', color: '#4f46e5' },
+  { key: 'graduation', name: '毕业奖金', color: '#d97706' },
   { key: 'adventure', name: '冒险所得', color: '#9333ea' },
   { key: 'pk', name: 'PK所得', color: '#db2777' },
   { key: 'gacha', name: '抽奖返还', color: '#c026d3' },
@@ -133,6 +145,7 @@ interface SimState {
 const zeroIncome = (): IncomeBreakdown => ({
   course: 0,
   scholarship: 0,
+  graduation: 0,
   work: 0,
   hire: 0,
   hiredBy: 0,
@@ -356,6 +369,7 @@ export function runSim(
     st.coursesDone++;
     if (st.coursesDone >= stage.required) {
       milestones.push({ label: `${stage.name}毕业`, day });
+      if (stage.graduationBonus > 0) earn('graduation', stage.graduationBonus);
       st.phase++;
       st.coursesDone = 0;
       if (st.phase >= cfg.stages.length) {
@@ -750,9 +764,10 @@ export function runSim(
     }
     paySickDebt();
 
-    const actions = Math.max(
-      0,
+    const actions = resolveDailyActions(
       Math.min(strat.dailyActions, cfg.base.dailyActionLimit) - st.lostWorkToday,
+      day,
+      rng,
     );
     for (let i = 0; i < actions; i++) {
       const ok = st.phase === 3 ? doJobAction(day) : doStudy(day);

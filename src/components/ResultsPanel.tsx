@@ -19,6 +19,7 @@ import type { BalanceMetric } from '../sim/balance';
 import { computeBalanceMetrics } from '../sim/balance';
 import type { StrategyOutput } from '../sim/engine';
 import { EXPENSE_KEYS, INCOME_KEYS } from '../sim/engine';
+import { strategySummaryLines } from '../sim/strategySummary';
 
 const fmt = (v: number): string =>
   Math.abs(v) >= 10000 ? `${(v / 10000).toFixed(1)}w` : Math.round(v).toLocaleString();
@@ -43,6 +44,7 @@ export function ResultsPanel({
 
   return (
     <div className="results-panel">
+      <StrategyGuide outputs={outputs} config={config} />
       <BalancePanel outputs={outputs} focusId={settings.focusStrategyId} />
       <SummaryCards outputs={outputs} />
       <GoldChart outputs={outputs} settings={settings} setSettings={setSettings} focus={focus} />
@@ -53,6 +55,44 @@ export function ResultsPanel({
       <BreakdownChart focus={focus} />
       <NetChart outputs={outputs} />
       <TotalsTable outputs={outputs} />
+    </div>
+  );
+}
+
+// ---- 玩家策略说明 ----
+
+function StrategyGuide({
+  outputs,
+  config,
+}: {
+  outputs: StrategyOutput[];
+  config: SimConfig;
+}) {
+  return (
+    <div className="chart-block strategy-guide">
+      <h3>玩家策略说明</h3>
+      <p className="strategy-guide-intro">
+        五档画像按<strong>日均行动点</strong>区分（学习/打工占用行动点，冒险·PK·装扮·抽奖不占行动点）。
+        毕业后：有属性缺口且金币够 → 进修，否则打工。
+      </p>
+      <div className="strategy-guide-grid">
+        {outputs.map((o) => (
+          <div
+            key={o.strategy.id}
+            className="strategy-guide-card"
+            style={{ borderLeftColor: o.strategy.color }}
+          >
+            <div className="strategy-guide-name" style={{ color: o.strategy.color }}>
+              {o.strategy.name}
+            </div>
+            <ul className="strategy-guide-list">
+              {strategySummaryLines(o.strategy, config).map((line, i) => (
+                <li key={i}>{line}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

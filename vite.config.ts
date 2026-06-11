@@ -38,5 +38,7 @@ function saveConfigPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  // GitHub Pages 项目站：https://<user>.github.io/<repo>/
+  base: process.env.GITHUB_PAGES === 'true' ? '/pet-economy-sim/' : '/',
   plugins: [react(), saveConfigPlugin()],
 });
