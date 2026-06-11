@@ -1,0 +1,1045 @@
+{
+  "version": 1,
+  "savedAt": "2026-06-11T09:02:46.708Z",
+  "config": {
+    "modules": {
+      "hire": true,
+      "hiredBy": true,
+      "adventure": true,
+      "pk": true,
+      "sickness": true,
+      "outfits": true,
+      "washKit": true,
+      "scholarship": true,
+      "gacha": true
+    },
+    "base": {
+      "staminaMax": 100,
+      "decayPerDay": 12,
+      "foodCost": 10,
+      "foodGain": 10,
+      "initialGold": 0,
+      "dailyActionLimit": 4,
+      "tutorialGold": 200,
+      "tutorialAttr": 1
+    },
+    "stages": [
+      {
+        "name": "小学",
+        "required": 6,
+        "scholarship": {
+          "p1": 0.15,
+          "amount1": 50,
+          "p2": 0.35,
+          "amount2": 25
+        },
+        "courses": [
+          {
+            "name": "蹦蹦跳跳体能课",
+            "wu": 1,
+            "zhi": 0,
+            "mei": 0,
+            "random": 0,
+            "stamina": 10,
+            "baseGold": 50
+          },
+          {
+            "name": "看图识世界课",
+            "wu": 0,
+            "zhi": 1,
+            "mei": 0,
+            "random": 0,
+            "stamina": 10,
+            "baseGold": 50
+          },
+          {
+            "name": "闪亮自我表达课",
+            "wu": 0,
+            "zhi": 0,
+            "mei": 1,
+            "random": 0,
+            "stamina": 10,
+            "baseGold": 50
+          },
+          {
+            "name": "公益夏令营",
+            "wu": 0,
+            "zhi": 0,
+            "mei": 0,
+            "random": 1,
+            "extraProb": 0.2,
+            "extraAmount": 1,
+            "stamina": 20,
+            "baseGold": 0
+          }
+        ]
+      },
+      {
+        "name": "中学",
+        "required": 8,
+        "scholarship": {
+          "p1": 0.15,
+          "amount1": 60,
+          "p2": 0.35,
+          "amount2": 30
+        },
+        "courses": [
+          {
+            "name": "障碍挑战课",
+            "wu": 2,
+            "zhi": 0,
+            "mei": 0,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 60
+          },
+          {
+            "name": "机器人拆解课",
+            "wu": 0,
+            "zhi": 2,
+            "mei": 0,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 60
+          },
+          {
+            "name": "舞台表演课",
+            "wu": 0,
+            "zhi": 0,
+            "mei": 2,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 60
+          },
+          {
+            "name": "野外探险课",
+            "wu": 1,
+            "zhi": 1,
+            "mei": 0,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 60
+          },
+          {
+            "name": "星空观察课",
+            "wu": 0,
+            "zhi": 1,
+            "mei": 1,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 60
+          },
+          {
+            "name": "料理实验课",
+            "wu": 0,
+            "zhi": 1,
+            "mei": 1,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 60
+          },
+          {
+            "name": "公益夏令营",
+            "wu": 0,
+            "zhi": 0,
+            "mei": 0,
+            "random": 2,
+            "extraProb": 0.2,
+            "extraAmount": 1,
+            "stamina": 20,
+            "baseGold": 0
+          }
+        ]
+      },
+      {
+        "name": "大学",
+        "required": 10,
+        "scholarship": {
+          "p1": 0.1,
+          "amount1": 70,
+          "p2": 0.3,
+          "amount2": 35
+        },
+        "courses": [
+          {
+            "name": "魅力穿搭课",
+            "wu": 0,
+            "zhi": 0,
+            "mei": 3,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 70
+          },
+          {
+            "name": "梦境编剧课",
+            "wu": 0,
+            "zhi": 2,
+            "mei": 1,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 70
+          },
+          {
+            "name": "武术身法课",
+            "wu": 3,
+            "zhi": 0,
+            "mei": 0,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 70
+          },
+          {
+            "name": "力量觉醒课",
+            "wu": 2,
+            "zhi": 1,
+            "mei": 0,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 70
+          },
+          {
+            "name": "爪爪算法课",
+            "wu": 0,
+            "zhi": 3,
+            "mei": 0,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 70
+          },
+          {
+            "name": "舞台导演课",
+            "wu": 0,
+            "zhi": 1,
+            "mei": 2,
+            "random": 0,
+            "stamina": 15,
+            "baseGold": 70
+          },
+          {
+            "name": "公益夏令营",
+            "wu": 0,
+            "zhi": 0,
+            "mei": 0,
+            "random": 3,
+            "extraProb": 0.2,
+            "extraAmount": 2,
+            "stamina": 20,
+            "baseGold": 0
+          }
+        ]
+      }
+    ],
+    "training": {
+      "cost": 100,
+      "stamina": 20,
+      "scholarship": {
+        "p1": 0.1,
+        "amount1": 40,
+        "p2": 0.3,
+        "amount2": 20
+      },
+      "courses": [
+        {
+          "name": "梦境领航员特训",
+          "wu": 0,
+          "zhi": 3,
+          "mei": 0
+        },
+        {
+          "name": "宗师格斗特训",
+          "wu": 3,
+          "zhi": 0,
+          "mei": 0
+        },
+        {
+          "name": "巨星自我修养",
+          "wu": 0,
+          "zhi": 0,
+          "mei": 3
+        },
+        {
+          "name": "灵犀演说特训",
+          "wu": 0,
+          "zhi": 2,
+          "mei": 1
+        },
+        {
+          "name": "歌剧院首席带演",
+          "wu": 0,
+          "zhi": 1,
+          "mei": 2
+        },
+        {
+          "name": "兵法模拟推演",
+          "wu": 2,
+          "zhi": 1,
+          "mei": 0
+        }
+      ]
+    },
+    "jobsCfg": {
+      "attrCap": 500,
+      "orderMeta": {
+        "kuai": {
+          "minutes": 60,
+          "stamina": 10
+        },
+        "wen": {
+          "minutes": 120,
+          "stamina": 15
+        },
+        "guaji": {
+          "minutes": 240,
+          "stamina": 20
+        },
+        "du": {
+          "minutes": 240,
+          "stamina": 20
+        }
+      },
+      "payRows": [
+        {
+          "kuai": {
+            "min": 100,
+            "max": 100
+          },
+          "wen": {
+            "min": 80,
+            "max": 160
+          },
+          "guaji": {
+            "min": 140,
+            "max": 180
+          },
+          "du": {
+            "min": 20,
+            "max": 220
+          }
+        },
+        {
+          "kuai": {
+            "min": 110,
+            "max": 110
+          },
+          "wen": {
+            "min": 90,
+            "max": 170
+          },
+          "guaji": {
+            "min": 150,
+            "max": 185
+          },
+          "du": {
+            "min": 24,
+            "max": 235
+          }
+        },
+        {
+          "kuai": {
+            "min": 120,
+            "max": 120
+          },
+          "wen": {
+            "min": 100,
+            "max": 190
+          },
+          "guaji": {
+            "min": 165,
+            "max": 210
+          },
+          "du": {
+            "min": 32,
+            "max": 255
+          }
+        },
+        {
+          "kuai": {
+            "min": 130,
+            "max": 130
+          },
+          "wen": {
+            "min": 115,
+            "max": 215
+          },
+          "guaji": {
+            "min": 180,
+            "max": 230
+          },
+          "du": {
+            "min": 36,
+            "max": 285
+          }
+        },
+        {
+          "kuai": {
+            "min": 140,
+            "max": 140
+          },
+          "wen": {
+            "min": 125,
+            "max": 230
+          },
+          "guaji": {
+            "min": 195,
+            "max": 250
+          },
+          "du": {
+            "min": 45,
+            "max": 300
+          }
+        },
+        {
+          "kuai": {
+            "min": 80,
+            "max": 80
+          },
+          "wen": {
+            "min": 25,
+            "max": 130
+          },
+          "guaji": {
+            "min": 85,
+            "max": 150
+          },
+          "du": {
+            "min": 12,
+            "max": 300
+          }
+        }
+      ],
+      "jobs": [
+        {
+          "id": "huajia",
+          "name": "🎨 画家",
+          "tiers": [
+            {
+              "name": "见习",
+              "wu": 0,
+              "zhi": 14,
+              "mei": 24,
+              "workFromPrev": 0,
+              "payRow": 0
+            },
+            {
+              "name": "初级",
+              "wu": 0,
+              "zhi": 22,
+              "mei": 42,
+              "workFromPrev": 10,
+              "payRow": 1
+            },
+            {
+              "name": "中级",
+              "wu": 0,
+              "zhi": 38,
+              "mei": 74,
+              "workFromPrev": 18,
+              "payRow": 2
+            },
+            {
+              "name": "高级",
+              "wu": 0,
+              "zhi": 68,
+              "mei": 130,
+              "workFromPrev": 32,
+              "payRow": 3
+            },
+            {
+              "name": "大师",
+              "wu": 0,
+              "zhi": 112,
+              "mei": 220,
+              "workFromPrev": 48,
+              "payRow": 4
+            }
+          ]
+        },
+        {
+          "id": "zhentan",
+          "name": "✍️ 侦探",
+          "tiers": [
+            {
+              "name": "见习",
+              "wu": 14,
+              "zhi": 24,
+              "mei": 0,
+              "workFromPrev": 0,
+              "payRow": 0
+            },
+            {
+              "name": "初级",
+              "wu": 22,
+              "zhi": 42,
+              "mei": 0,
+              "workFromPrev": 10,
+              "payRow": 1
+            },
+            {
+              "name": "中级",
+              "wu": 38,
+              "zhi": 74,
+              "mei": 0,
+              "workFromPrev": 18,
+              "payRow": 2
+            },
+            {
+              "name": "高级",
+              "wu": 68,
+              "zhi": 130,
+              "mei": 0,
+              "workFromPrev": 32,
+              "payRow": 3
+            },
+            {
+              "name": "大师",
+              "wu": 112,
+              "zhi": 220,
+              "mei": 0,
+              "workFromPrev": 48,
+              "payRow": 4
+            }
+          ]
+        },
+        {
+          "id": "fashi",
+          "name": "🔮 大魔法师",
+          "tiers": [
+            {
+              "name": "见习",
+              "wu": 0,
+              "zhi": 22,
+              "mei": 16,
+              "workFromPrev": 0,
+              "payRow": 0
+            },
+            {
+              "name": "初级",
+              "wu": 0,
+              "zhi": 38,
+              "mei": 27,
+              "workFromPrev": 10,
+              "payRow": 1
+            },
+            {
+              "name": "中级",
+              "wu": 0,
+              "zhi": 66,
+              "mei": 48,
+              "workFromPrev": 18,
+              "payRow": 2
+            },
+            {
+              "name": "高级",
+              "wu": 0,
+              "zhi": 116,
+              "mei": 88,
+              "workFromPrev": 32,
+              "payRow": 3
+            },
+            {
+              "name": "大师",
+              "wu": 0,
+              "zhi": 192,
+              "mei": 150,
+              "workFromPrev": 48,
+              "payRow": 4
+            }
+          ]
+        },
+        {
+          "id": "dachu",
+          "name": "🍳 大厨",
+          "tiers": [
+            {
+              "name": "见习",
+              "wu": 22,
+              "zhi": 16,
+              "mei": 0,
+              "workFromPrev": 0,
+              "payRow": 0
+            },
+            {
+              "name": "初级",
+              "wu": 38,
+              "zhi": 27,
+              "mei": 0,
+              "workFromPrev": 10,
+              "payRow": 1
+            },
+            {
+              "name": "中级",
+              "wu": 66,
+              "zhi": 48,
+              "mei": 0,
+              "workFromPrev": 18,
+              "payRow": 2
+            },
+            {
+              "name": "高级",
+              "wu": 116,
+              "zhi": 88,
+              "mei": 0,
+              "workFromPrev": 32,
+              "payRow": 3
+            },
+            {
+              "name": "大师",
+              "wu": 192,
+              "zhi": 150,
+              "mei": 0,
+              "workFromPrev": 48,
+              "payRow": 4
+            }
+          ]
+        },
+        {
+          "id": "wushu",
+          "name": "🥋 武术家",
+          "tiers": [
+            {
+              "name": "见习",
+              "wu": 40,
+              "zhi": 0,
+              "mei": 0,
+              "workFromPrev": 0,
+              "payRow": 0
+            },
+            {
+              "name": "初级",
+              "wu": 68,
+              "zhi": 0,
+              "mei": 0,
+              "workFromPrev": 10,
+              "payRow": 1
+            },
+            {
+              "name": "中级",
+              "wu": 118,
+              "zhi": 0,
+              "mei": 0,
+              "workFromPrev": 18,
+              "payRow": 2
+            },
+            {
+              "name": "高级",
+              "wu": 210,
+              "zhi": 0,
+              "mei": 0,
+              "workFromPrev": 32,
+              "payRow": 3
+            },
+            {
+              "name": "大师",
+              "wu": 330,
+              "zhi": 0,
+              "mei": 0,
+              "workFromPrev": 48,
+              "payRow": 4
+            }
+          ]
+        },
+        {
+          "id": "meng",
+          "name": "🌙 梦境旅人",
+          "tiers": [
+            {
+              "name": "见习",
+              "wu": 0,
+              "zhi": 40,
+              "mei": 0,
+              "workFromPrev": 0,
+              "payRow": 0
+            },
+            {
+              "name": "初级",
+              "wu": 0,
+              "zhi": 68,
+              "mei": 0,
+              "workFromPrev": 10,
+              "payRow": 1
+            },
+            {
+              "name": "中级",
+              "wu": 0,
+              "zhi": 118,
+              "mei": 0,
+              "workFromPrev": 18,
+              "payRow": 2
+            },
+            {
+              "name": "高级",
+              "wu": 0,
+              "zhi": 210,
+              "mei": 0,
+              "workFromPrev": 32,
+              "payRow": 3
+            },
+            {
+              "name": "大师",
+              "wu": 0,
+              "zhi": 330,
+              "mei": 0,
+              "workFromPrev": 48,
+              "payRow": 4
+            }
+          ]
+        },
+        {
+          "id": "mingxing",
+          "name": "⭐ 大明星",
+          "tiers": [
+            {
+              "name": "见习",
+              "wu": 0,
+              "zhi": 0,
+              "mei": 40,
+              "workFromPrev": 0,
+              "payRow": 0
+            },
+            {
+              "name": "初级",
+              "wu": 0,
+              "zhi": 0,
+              "mei": 68,
+              "workFromPrev": 10,
+              "payRow": 1
+            },
+            {
+              "name": "中级",
+              "wu": 0,
+              "zhi": 0,
+              "mei": 118,
+              "workFromPrev": 18,
+              "payRow": 2
+            },
+            {
+              "name": "高级",
+              "wu": 0,
+              "zhi": 0,
+              "mei": 210,
+              "workFromPrev": 32,
+              "payRow": 3
+            },
+            {
+              "name": "大师",
+              "wu": 0,
+              "zhi": 0,
+              "mei": 330,
+              "workFromPrev": 48,
+              "payRow": 4
+            }
+          ]
+        },
+        {
+          "id": "wanxiang",
+          "name": "🌌 万象之主",
+          "tiers": [
+            {
+              "name": "见习·小乞丐",
+              "wu": 0,
+              "zhi": 0,
+              "mei": 0,
+              "workFromPrev": 0,
+              "payRow": 5
+            },
+            {
+              "name": "高级·万象宗师",
+              "wu": 72,
+              "zhi": 72,
+              "mei": 72,
+              "workFromPrev": 32,
+              "payRow": 3
+            },
+            {
+              "name": "大师·万象之主",
+              "wu": 118,
+              "zhi": 118,
+              "mei": 118,
+              "workFromPrev": 48,
+              "payRow": 4
+            }
+          ]
+        }
+      ]
+    },
+    "hire": {
+      "dailyLimit": 6,
+      "interruptProb": 0.3,
+      "bonusByTier": [
+        {
+          "min": 4,
+          "max": 16
+        },
+        {
+          "min": 5,
+          "max": 18
+        },
+        {
+          "min": 6,
+          "max": 20
+        },
+        {
+          "min": 8,
+          "max": 22
+        },
+        {
+          "min": 10,
+          "max": 26
+        }
+      ]
+    },
+    "hiredBy": {
+      "dailyLimit": 5
+    },
+    "adventure": {
+      "costGold": 10,
+      "costStamina": 0,
+      "events": [
+        {
+          "name": "打招呼",
+          "prob": 25,
+          "gold": 10,
+          "stamina": 0
+        },
+        {
+          "name": "捡到大量金币",
+          "prob": 20,
+          "gold": 30,
+          "stamina": 0
+        },
+        {
+          "name": "捡到少量金币",
+          "prob": 10,
+          "gold": 15,
+          "stamina": 0
+        },
+        {
+          "name": "被偷金币",
+          "prob": 15,
+          "gold": -20,
+          "stamina": 0
+        },
+        {
+          "name": "阴天（清洁+10）",
+          "prob": 15,
+          "gold": 0,
+          "stamina": 0
+        },
+        {
+          "name": "晴天（心情+10）",
+          "prob": 15,
+          "gold": 0,
+          "stamina": 0
+        },
+        {
+          "name": "雨天（体力+10）",
+          "prob": 15,
+          "gold": 0,
+          "stamina": 10
+        }
+      ]
+    },
+    "pk": {
+      "stamina": 5,
+      "winProb": 0.5,
+      "winGold": 8,
+      "loseGold": 8
+    },
+    "sick": {
+      "intervalDays": 21,
+      "priceCheap": 50,
+      "priceMid": 150,
+      "priceFast": 800
+    },
+    "washKit": {
+      "selfPerDay": 1,
+      "friendMin": 3,
+      "friendMax": 5,
+      "thresholdMin": 30,
+      "thresholdMax": 40
+    },
+    "outfit": {
+      "prices": {
+        "hat": [
+          500,
+          750,
+          1000,
+          3000
+        ],
+        "accessory": [
+          400,
+          600,
+          800,
+          3000
+        ],
+        "clothes": [
+          800,
+          1000,
+          1500,
+          5000
+        ],
+        "background": [
+          600,
+          600,
+          1000,
+          5000
+        ]
+      },
+      "reserve": 500,
+      "initialCounts": [
+        30,
+        12,
+        6,
+        2
+      ],
+      "releaseIntervalDays": [
+        7,
+        14,
+        30,
+        45
+      ]
+    },
+    "gacha": {
+      "price": 130,
+      "startDay": 90,
+      "seasonDays": 90,
+      "prizes": [
+        {
+          "name": "终极大奖（限定外观）",
+          "prob": 0.3,
+          "gold": 0,
+          "isGrand": true
+        },
+        {
+          "name": "金币暴击 +400",
+          "prob": 2,
+          "gold": 400
+        },
+        {
+          "name": "大金袋 +150",
+          "prob": 6,
+          "gold": 150
+        },
+        {
+          "name": "小金袋 +60",
+          "prob": 18,
+          "gold": 60
+        },
+        {
+          "name": "安慰金 +20",
+          "prob": 25,
+          "gold": 20
+        },
+        {
+          "name": "谢谢惠顾（纪念碎片）",
+          "prob": 48.7,
+          "gold": 0
+        }
+      ]
+    },
+    "strategies": [
+      {
+        "id": "casual",
+        "name": "休闲玩家",
+        "enabled": true,
+        "color": "#60a5fa",
+        "dailyActions": 2,
+        "orderPref": "kuai",
+        "adventuresPerDay": 1,
+        "pksPerDay": 2,
+        "targetJobId": "mingxing",
+        "useHire": true,
+        "goldReserve": 50,
+        "outfitProbs": [
+          0.5,
+          0.3,
+          0.1,
+          0
+        ],
+        "beHiredPerDay": 2,
+        "selfOnlineProb": 0.3,
+        "sickLostWork": 1,
+        "gachaPerDay": 2,
+        "gachaFloor": 300
+      },
+      {
+        "id": "normal",
+        "name": "普通玩家",
+        "enabled": true,
+        "color": "#34d399",
+        "dailyActions": 4,
+        "orderPref": "wen",
+        "adventuresPerDay": 3,
+        "pksPerDay": 5,
+        "targetJobId": "huajia",
+        "useHire": true,
+        "goldReserve": 50,
+        "outfitProbs": [
+          0.7,
+          0.5,
+          0.3,
+          0.25
+        ],
+        "beHiredPerDay": 3,
+        "selfOnlineProb": 0.5,
+        "sickLostWork": 0.5,
+        "gachaPerDay": 5,
+        "gachaFloor": 5000
+      },
+      {
+        "id": "grinder",
+        "name": "肝帝",
+        "enabled": true,
+        "color": "#fbbf24",
+        "dailyActions": 4,
+        "orderPref": "guaji",
+        "adventuresPerDay": 8,
+        "pksPerDay": 10,
+        "targetJobId": "wushu",
+        "useHire": true,
+        "goldReserve": 50,
+        "outfitProbs": [
+          0.9,
+          0.8,
+          0.7,
+          0.8
+        ],
+        "beHiredPerDay": 4,
+        "selfOnlineProb": 0.8,
+        "sickLostWork": 0,
+        "gachaPerDay": 12,
+        "gachaFloor": 8000
+      },
+      {
+        "id": "optimal",
+        "name": "最优策略(贪心)",
+        "enabled": true,
+        "color": "#f87171",
+        "dailyActions": 4,
+        "orderPref": "auto",
+        "adventuresPerDay": 0,
+        "pksPerDay": 0,
+        "targetJobId": "wushu",
+        "useHire": true,
+        "goldReserve": 50,
+        "outfitProbs": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "beHiredPerDay": 4,
+        "selfOnlineProb": 0.8,
+        "sickLostWork": 0,
+        "gachaPerDay": 0,
+        "gachaFloor": 0
+      }
+    ]
+  },
+  "settings": {
+    "days": 90,
+    "mcEnabled": true,
+    "mcRuns": 200,
+    "focusStrategyId": "normal"
+  }
+}
