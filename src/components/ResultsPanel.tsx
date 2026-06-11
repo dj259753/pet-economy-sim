@@ -17,6 +17,7 @@ import type { SimConfig, SimSettings } from '../sim/config';
 import { OUTFIT_CATEGORIES, OUTFIT_GRADES } from '../sim/config';
 import type { BalanceMetric } from '../sim/balance';
 import { computeBalanceMetrics } from '../sim/balance';
+import { analyzeGachaTarget } from '../sim/gachaAnalysis';
 import type { StrategyOutput } from '../sim/engine';
 import { EXPENSE_KEYS, INCOME_KEYS } from '../sim/engine';
 import { strategySummaryLines } from '../sim/strategySummary';
@@ -45,8 +46,8 @@ export function ResultsPanel({
   return (
     <div className="results-panel">
       <StrategyGuide outputs={outputs} config={config} />
-      <BalancePanel outputs={outputs} focusId={settings.focusStrategyId} />
-      <SummaryCards outputs={outputs} />
+      <BalancePanel outputs={outputs} config={config} focusId={settings.focusStrategyId} />
+      <SummaryCards outputs={outputs} config={config} />
       <GoldChart outputs={outputs} settings={settings} setSettings={setSettings} focus={focus} />
       <div className="chart-grid">
         <MilestonePanel outputs={outputs} />
@@ -107,14 +108,16 @@ const STATUS_STYLE: Record<BalanceMetric['status'], string> = {
 
 function BalancePanel({
   outputs,
+  config,
   focusId,
 }: {
   outputs: StrategyOutput[];
+  config: SimConfig;
   focusId: string;
 }) {
   const focus = outputs.find((o) => o.strategy.id === focusId) ?? outputs[0];
   if (!focus) return null;
-  const metrics = computeBalanceMetrics(focus.ev);
+  const metrics = computeBalanceMetrics(focus.ev, config, focus.strategy);
 
   return (
     <div className="chart-block balance-panel">
@@ -144,12 +147,19 @@ function BalancePanel({
 
 // ---- 概览卡片 ----
 
-function SummaryCards({ outputs }: { outputs: StrategyOutput[] }) {
+function SummaryCards({
+  outputs,
+  config,
+}: {
+  outputs: StrategyOutput[];
+  config: SimConfig;
+}) {
   return (
     <div className="cards">
       {outputs.map((o) => {
         const masterMilestone = o.ev.milestones.find((m) => m.label.startsWith('晋升 大师'));
         const lastPromo = [...o.ev.milestones].reverse().find((m) => m.label.startsWith('晋升'));
+        const gachaTarget = analyzeGachaTarget(config, o.strategy, o.ev);
         return (
           <div key={o.strategy.id} className="card" style={{ borderTopColor: o.strategy.color }}>
             <div className="card-title" style={{ color: o.strategy.color }}>
@@ -188,6 +198,28 @@ function SummaryCards({ outputs }: { outputs: StrategyOutput[] }) {
                 抽奖 <b>{fmt(o.ev.gachaDraws)}</b> 次 / 净沉没{' '}
                 <b>{fmt(o.ev.totalExpense.gacha - o.ev.totalIncome.gacha)}</b> / 大奖{' '}
                 <b>{o.ev.gachaGrandWins.toFixed(1)}</b> 个
+              </div>
+              <div>
+                终极大奖 <b>{gachaTarget.grandLabel}</b> / 目标 ≤{config.gacha.targetGrandDays}天
+              </div>
+              <div>
+                周期内补币{' '}
+                <b>
+                  {gachaTarget.payYuanToMeetTarget > 0
+                    ? `约 ¥${gachaTarget.payYuanToMeetTarget}`
+                    : o.ev.totalPayYuan > 0
+                      ? `已达标（模拟 ¥${Math.round(o.ev.totalPayYuan)}）`
+                      : '¥0'}
+                </b>
+              </div>
+              <div>
+                付费充值（全周期）{' '}
+                <b>
+                  ¥{o.ev.totalPayYuan.toFixed(0)}
+                  {o.ev.totalPayYuan > 0
+                    ? ` → ${fmt(o.ev.totalIncome.recharge)} 币`
+                    : ''}
+                </b>
               </div>
               {o.mc && (
                 <div>

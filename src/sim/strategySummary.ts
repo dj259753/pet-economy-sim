@@ -29,10 +29,16 @@ export function strategySummaryLines(strat: StrategyConfig, config: SimConfig): 
     `被雇佣 ${strat.beHiredPerDay} 次/天（打断 ${(strat.selfOnlineProb * 100).toFixed(0)}%）· 金币安全线 ${strat.goldReserve}`,
   );
   lines.push(
-    `装扮意愿 B/A/S ${strat.outfitProbs.map((p) => `${(p * 100).toFixed(0)}%`).join(' / ')}`,
+    `装扮意愿 B/A ${strat.outfitProbs.map((p) => `${(p * 100).toFixed(0)}%`).join(' / ')}`,
   );
   if (strat.gachaPerDay > 0) {
     lines.push(`抽奖 ≤${strat.gachaPerDay} 次/天，存量 ≥${strat.gachaFloor.toLocaleString()} 起抽`);
+    if (strat.rechargeForGacha) {
+      const caps: string[] = [];
+      if (strat.maxPayYuanPerDay > 0) caps.push(`日限 ¥${strat.maxPayYuanPerDay}`);
+      if (strat.maxPayYuanTotal > 0) caps.push(`总限 ¥${strat.maxPayYuanTotal}`);
+      lines.push(`金币不足时付费补币抽奖${caps.length ? `（${caps.join('，')}）` : ''}`);
+    }
   } else {
     lines.push('不参与抽奖');
   }

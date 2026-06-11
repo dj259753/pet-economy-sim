@@ -131,13 +131,13 @@ export const OUTFIT_CATEGORIES: { key: OutfitCategory; name: string }[] = [
   { key: 'accessory', name: '配饰' },
   { key: 'background', name: '房间背景' },
 ];
-export const OUTFIT_GRADES = ['B', 'A', 'S'] as const;
+export const OUTFIT_GRADES = ['B', 'A'] as const;
 
 export interface OutfitConfig {
-  prices: Record<OutfitCategory, [number, number, number]>; // B/A/S
+  prices: Record<OutfitCategory, [number, number]>; // B/A
   reserve: number; // 购买时保留的金币缓冲
-  initialCounts: [number, number, number]; // 开服时每档在售款数
-  releaseIntervalDays: [number, number, number]; // 每档上新间隔天数（0=不上新）
+  initialCounts: [number, number]; // 开服时每档在售款数
+  releaseIntervalDays: [number, number]; // 每档上新间隔天数（0=不上新）
 }
 
 export interface GachaPrize {
@@ -151,7 +151,12 @@ export interface GachaConfig {
   price: number; // 单抽价格
   startDay: number; // 开服第几天上线抽奖（之前不参与模拟）
   seasonDays: number; // 奖池轮换周期（天），从 startDay 起算；抽中本期大奖后停抽直到下期上新；0=永久同一期
+  targetGrandDays: number; // 设计目标：用户中位多少天抽到终极大奖
   prizes: GachaPrize[];
+}
+
+export interface PayConfig {
+  goldPerYuan: number; // 1 元人民币兑换金币数
 }
 
 /** 各机制总开关：关闭后完全不计入模拟 */
@@ -165,6 +170,7 @@ export interface ModulesConfig {
   washKit: boolean; // 洗护套装
   scholarship: boolean; // 奖学金
   gacha: boolean; // 抽奖
+  pay: boolean; // 付费充值（为抽奖补金币）
 }
 
 export interface BaseConfig {
@@ -190,12 +196,15 @@ export interface StrategyConfig {
   targetJobId: string;
   useHire: boolean;
   goldReserve: number; // 金币安全线
-  outfitProbs: [number, number, number]; // 每档新品的购买意愿概率 B/A/S
+  outfitProbs: [number, number]; // 每档新品的购买意愿概率 B/A
   beHiredPerDay: number; // 每日实际被雇佣次数（≤全局上限）
   selfOnlineProb: number; // 被雇佣时上线打断（分得一半加成）的概率
   sickLostWork: number; // 选150元档治病时平均损失的打工次数
   gachaPerDay: number; // 每日最多抽奖次数
   gachaFloor: number; // 金币存量低于该值时不抽奖
+  rechargeForGacha: boolean; // 金币不够时为继续抽奖而付费充值
+  maxPayYuanPerDay: number; // 每日充值上限（元），0=不限
+  maxPayYuanTotal: number; // 全周期充值上限（元），0=不限
 }
 
 export interface SimConfig {
@@ -212,7 +221,17 @@ export interface SimConfig {
   washKit: WashKitConfig;
   outfit: OutfitConfig;
   gacha: GachaConfig;
+  pay: PayConfig;
   strategies: StrategyConfig[];
+}
+
+/** 单期终极大奖中位所需抽数（50% 玩家） */
+export function medianDrawsToGrand(gacha: GachaConfig): number {
+  const total = gacha.prizes.reduce((s, p) => s + p.prob, 0) || 1;
+  const grandProb =
+    gacha.prizes.filter((p) => p.isGrand).reduce((s, p) => s + p.prob, 0) / total;
+  if (grandProb <= 0) return Infinity;
+  return Math.ceil(Math.log(0.5) / Math.log(1 - grandProb));
 }
 
 export interface SimSettings {
@@ -300,6 +319,7 @@ export const DEFAULT_CONFIG: SimConfig = {
     washKit: true,
     scholarship: true,
     gacha: true,
+    pay: true,
   },
 
   base: {
@@ -483,20 +503,25 @@ export const DEFAULT_CONFIG: SimConfig = {
 
   outfit: {
     prices: {
-      hat: [250, 600, 3000],
-      accessory: [250, 600, 3000],
-      clothes: [400, 1000, 5000],
-      background: [400, 1000, 5000],
+      hat: [250, 600],
+      accessory: [250, 600],
+      clothes: [400, 1000],
+      background: [400, 1000],
     },
     reserve: 200,
-    initialCounts: [12, 6, 2],
-    releaseIntervalDays: [14, 30, 45],
+    initialCounts: [12, 6],
+    releaseIntervalDays: [14, 30],
+  },
+
+  pay: {
+    goldPerYuan: 100,
   },
 
   gacha: {
     price: 130,
     startDay: 90,
     seasonDays: 90,
+    targetGrandDays: 90,
     prizes: [
       { name: '终极大奖（限定外观）', prob: 0.3, gold: 0, isGrand: true },
       { name: '金币暴击 +400', prob: 2, gold: 400 },
@@ -520,12 +545,15 @@ export const DEFAULT_CONFIG: SimConfig = {
       targetJobId: 'mingxing',
       useHire: false,
       goldReserve: 50,
-      outfitProbs: [0.1, 0, 0],
+      outfitProbs: [0.1, 0],
       beHiredPerDay: 1,
       selfOnlineProb: 0.2,
       sickLostWork: 1,
       gachaPerDay: 0,
       gachaFloor: 99999,
+      rechargeForGacha: false,
+      maxPayYuanPerDay: 0,
+      maxPayYuanTotal: 0,
     },
     {
       id: 'casual',
@@ -539,12 +567,15 @@ export const DEFAULT_CONFIG: SimConfig = {
       targetJobId: 'mingxing',
       useHire: true,
       goldReserve: 50,
-      outfitProbs: [0.25, 0.08, 0],
+      outfitProbs: [0.25, 0.08],
       beHiredPerDay: 2,
       selfOnlineProb: 0.3,
       sickLostWork: 1,
       gachaPerDay: 1,
       gachaFloor: 300,
+      rechargeForGacha: true,
+      maxPayYuanPerDay: 30,
+      maxPayYuanTotal: 200,
     },
     {
       id: 'normal',
@@ -558,12 +589,15 @@ export const DEFAULT_CONFIG: SimConfig = {
       targetJobId: 'huajia',
       useHire: true,
       goldReserve: 50,
-      outfitProbs: [0.45, 0.25, 0.1],
+      outfitProbs: [0.45, 0.25],
       beHiredPerDay: 3,
       selfOnlineProb: 0.5,
       sickLostWork: 0.5,
       gachaPerDay: 4,
       gachaFloor: 5000,
+      rechargeForGacha: true,
+      maxPayYuanPerDay: 68,
+      maxPayYuanTotal: 500,
     },
     {
       id: 'grinder',
@@ -577,12 +611,15 @@ export const DEFAULT_CONFIG: SimConfig = {
       targetJobId: 'wushu',
       useHire: true,
       goldReserve: 50,
-      outfitProbs: [0.65, 0.5, 0.35],
+      outfitProbs: [0.65, 0.5],
       beHiredPerDay: 4,
       selfOnlineProb: 0.7,
       sickLostWork: 0,
       gachaPerDay: 8,
       gachaFloor: 6000,
+      rechargeForGacha: true,
+      maxPayYuanPerDay: 128,
+      maxPayYuanTotal: 800,
     },
     {
       id: 'hardcore',
@@ -596,12 +633,15 @@ export const DEFAULT_CONFIG: SimConfig = {
       targetJobId: 'wushu',
       useHire: true,
       goldReserve: 50,
-      outfitProbs: [0.85, 0.75, 0.8],
+      outfitProbs: [0.85, 0.75],
       beHiredPerDay: 4,
       selfOnlineProb: 0.85,
       sickLostWork: 0,
       gachaPerDay: 12,
       gachaFloor: 8000,
+      rechargeForGacha: true,
+      maxPayYuanPerDay: 0,
+      maxPayYuanTotal: 1500,
     },
   ],
 };

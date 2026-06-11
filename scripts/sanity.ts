@@ -11,7 +11,7 @@ for (const o of outputs) {
   console.log(`稳态日净收益: ${o.ev.steadyNetPerDay.toFixed(1)}`);
   console.log(`生病次数: ${o.ev.sicknessCount}`);
   console.log(
-    `装扮可负担天: ${o.ev.affordDays.map((d, i) => `${'BAS'[i]}=${d ?? '未'}`).join(' ')}`,
+    `装扮可负担天: ${o.ev.affordDays.map((d, i) => `${'BA'[i]}=${d ?? '未'}`).join(' ')}`,
   );
   console.log('里程碑:');
   for (const m of o.ev.milestones) {
@@ -34,7 +34,10 @@ for (const o of outputs) {
   );
   console.log(`治病选档 低/中/高/赊: ${o.ev.sickTierCounts.join('/')}`);
   console.log(
-    `抽奖: ${Math.round(o.ev.gachaDraws)}次 花费${Math.round(exp.gacha)} 返还${Math.round(inc.gacha)} 净沉没${Math.round(exp.gacha - inc.gacha)} 大奖${o.ev.gachaGrandWins.toFixed(1)}个`,
+    `抽奖: ${Math.round(o.ev.gachaDraws)}次 花费${Math.round(exp.gacha)} 返还${Math.round(inc.gacha)} 净沉没${Math.round(exp.gacha - inc.gacha)} 大奖${o.ev.gachaGrandWins.toFixed(1)}个 首中第${o.ev.grandPrizeDay ?? '—'}天(目标${cfg.gacha.targetGrandDays})`,
+  );
+  console.log(
+    `付费: ¥${o.ev.totalPayYuan.toFixed(0)} → 充值金币${Math.round(inc.recharge)}`,
   );
   console.log(
     `总支出 ${Math.round(exSum)} (进修${Math.round(exp.training)} 食物${Math.round(exp.food)} 治病${Math.round(exp.sickness)} 冒险${Math.round(exp.adventure)} PK${Math.round(exp.pk)} 装扮${Math.round(exp.outfit)})`,

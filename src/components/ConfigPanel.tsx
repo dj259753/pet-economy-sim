@@ -1,5 +1,5 @@
 import type { OrderKey, SimConfig, StageConfig, StrategyConfig } from '../sim/config';
-import { OUTFIT_CATEGORIES, OUTFIT_GRADES } from '../sim/config';
+import { medianDrawsToGrand, OUTFIT_CATEGORIES, OUTFIT_GRADES } from '../sim/config';
 import { CellInput, Hint, NumField, Row, Section } from './ui';
 
 const ORDER_NAMES: Record<OrderKey, string> = {
@@ -28,6 +28,7 @@ export function ConfigPanel({
     { key: 'washKit', name: '洗护套装' },
     { key: 'scholarship', name: '奖学金' },
     { key: 'gacha', name: '抽奖' },
+    { key: 'pay', name: '付费充值' },
   ];
 
   return (
@@ -695,6 +696,12 @@ export function ConfigPanel({
             suffix="天"
             onChange={(v) => update((d) => (d.gacha.seasonDays = v))}
           />
+          <NumField
+            label="终极大奖周期目标"
+            value={config.gacha.targetGrandDays}
+            suffix="天"
+            onChange={(v) => update((d) => (d.gacha.targetGrandDays = Math.max(1, Math.round(v))))}
+          />
         </Row>
         <table className="mini-table">
           <thead>
@@ -731,7 +738,21 @@ export function ConfigPanel({
         <GachaEvHint config={config} />
       </Section>
 
-      <Section title="⑫ 玩家策略" defaultOpen>
+      <Section title="⑫ 付费充值（抽奖补币）">
+        <Row>
+          <NumField
+            label="兑换比例"
+            value={config.pay.goldPerYuan}
+            suffix="金币/元"
+            onChange={(v) => update((d) => (d.pay.goldPerYuan = v))}
+          />
+        </Row>
+        <Hint>
+          1 元人民币 = {config.pay.goldPerYuan} 金币。玩家在金币不够继续抽奖时，按策略配置的充值上限自动补币（计入「付费充值」收入与右侧付费指标）。
+        </Hint>
+      </Section>
+
+      <Section title="⑬ 玩家策略" defaultOpen>
         {config.strategies.map((strat, si) => (
           <StrategyEditor
             key={strat.id}
@@ -771,18 +792,20 @@ function GachaEvHint({ config }: { config: SimConfig }) {
   const grandProb = config.gacha.prizes
     .filter((p) => p.isGrand)
     .reduce((s, p) => s + p.prob, 0);
-  const medianDraws =
-    grandProb > 0 ? Math.ceil(Math.log(0.5) / Math.log(1 - grandProb / total)) : Infinity;
+  const medianDraws = medianDrawsToGrand(config.gacha);
   const sinkRate = config.gacha.price > 0 ? 1 - evReturn / config.gacha.price : 0;
+  const medianGold = medianDraws === Infinity ? Infinity : medianDraws * config.gacha.price;
+  const medianYuan =
+    medianGold === Infinity ? Infinity : Math.ceil(medianGold / config.pay.goldPerYuan);
   return (
     <Hint>
       概率合计 {total}%。单抽期望返还 {evReturn.toFixed(1)} 金币，沉没率{' '}
       {(sinkRate * 100).toFixed(0)}%。终极大奖概率 {((grandProb / total) * 100).toFixed(2)}%，
-      抽中所需中位次数 ≈ {medianDraws === Infinity ? '∞' : medianDraws} 次（≈
-      {medianDraws === Infinity ? '∞' : (medianDraws * config.gacha.price).toLocaleString()}{' '}
-      金币）。第 {config.gacha.startDay} 天起上线抽奖（之前不参与模拟）；奖池每{' '}
-      {config.gacha.seasonDays} 天轮换一期；中大奖后仍可继续抽（仅大奖不可重复至下期）。
-      每个策略的"每日抽数/起抽存量"在策略区配置。
+      中位约 {medianDraws === Infinity ? '∞' : medianDraws} 抽（≈
+      {medianGold === Infinity ? '∞' : medianGold.toLocaleString()} 金币 / ¥
+      {medianYuan === Infinity ? '∞' : medianYuan}）。设计目标：开抽后{' '}
+      <strong>{config.gacha.targetGrandDays} 天内</strong>中大奖（右侧仪表盘对比模拟结果）。
+      第 {config.gacha.startDay} 天起上线；奖池每 {config.gacha.seasonDays} 天轮换；中大奖后仍可继续抽小奖。
     </Hint>
   );
 }
@@ -925,6 +948,28 @@ function StrategyEditor({
           value={strat.gachaFloor}
           suffix="金币"
           onChange={(v) => onChange((s) => (s.gachaFloor = v))}
+        />
+      </Row>
+      <Row>
+        <label className="checkbox-field">
+          <input
+            type="checkbox"
+            checked={strat.rechargeForGacha}
+            onChange={(e) => onChange((s) => (s.rechargeForGacha = e.target.checked))}
+          />
+          金币不足时为抽奖充值
+        </label>
+        <NumField
+          label="日充值上限"
+          value={strat.maxPayYuanPerDay}
+          suffix="元"
+          onChange={(v) => onChange((s) => (s.maxPayYuanPerDay = v))}
+        />
+        <NumField
+          label="总充值上限"
+          value={strat.maxPayYuanTotal}
+          suffix="元"
+          onChange={(v) => onChange((s) => (s.maxPayYuanTotal = v))}
         />
       </Row>
       <div className="outfit-probs">

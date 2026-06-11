@@ -50,7 +50,7 @@
 npm install
 npm run dev          # http://localhost:5173
 npx tsx scripts/sanity.ts       # 命令行跑全策略汇总
-npx tsx scripts/write-snapshot.ts  # 用代码默认值重写 public/config.snapshot.json
+npx tsx scripts/write-snapshot.ts --force  # 仅重置时用：用代码默认值重写 snapshot（不加 --force 会拒绝覆盖）
 ```
 
 ### 2.1 配置保存与分享（发项目 = 发配置）
@@ -63,7 +63,10 @@ npx tsx scripts/write-snapshot.ts  # 用代码默认值重写 public/config.snap
 | 自动保存      | 改动写入浏览器 localStorage                      |
 | **保存到项目** | dev 模式写入 `public/config.snapshot.json`    |
 | 重载项目配置    | 丢弃本地未写回修改，读 snapshot                      |
-| 恢复默认      | 回到 `src/sim/config.ts` 的 `DEFAULT_CONFIG` |
+| 从导出恢复     | `npx tsx scripts/import-snapshot.ts <文件.json>` |
+| 恢复默认      | 回到 `src/sim/config.ts` 的 `DEFAULT_CONFIG`（不影响 snapshot） |
+
+**注意**：`public/config.snapshot.json` 是团队调参主配置，改代码时不要覆盖；不要用 `write-snapshot.ts` 除非明确要重置（需 `--force`）。
 
 
 **加载优先级**：`snapshot`（若比 localStorage 新或本地无缓存）> `localStorage` > `DEFAULT_CONFIG`。

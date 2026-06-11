@@ -55,6 +55,7 @@ export interface IncomeBreakdown {
   adventure: number;
   pk: number;
   gacha: number; // 抽奖金币返还
+  recharge: number; // 付费充值获得的金币
 }
 
 export interface ExpenseBreakdown {
@@ -77,6 +78,7 @@ export const INCOME_KEYS: { key: keyof IncomeBreakdown; name: string; color: str
   { key: 'adventure', name: '冒险所得', color: '#9333ea' },
   { key: 'pk', name: 'PK所得', color: '#db2777' },
   { key: 'gacha', name: '抽奖返还', color: '#c026d3' },
+  { key: 'recharge', name: '付费充值', color: '#eab308' },
 ];
 
 export const EXPENSE_KEYS: { key: keyof ExpenseBreakdown; name: string; color: string }[] = [
@@ -118,6 +120,8 @@ export interface RunResult {
   outfitOwnedSpend: number; // 装扮总花费
   gachaDraws: number; // 总抽奖次数
   gachaGrandWins: number; // 抽中终极大奖次数（期望模式为期望值）
+  grandPrizeDay: number | null; // 首次中终极大奖的天数
+  totalPayYuan: number; // 全周期付费充值（人民币）
   affordDays: (number | null)[];
 }
 
@@ -152,6 +156,7 @@ const zeroIncome = (): IncomeBreakdown => ({
   adventure: 0,
   pk: 0,
   gacha: 0,
+  recharge: 0,
 });
 const zeroExpense = (): ExpenseBreakdown => ({
   training: 0,
@@ -634,8 +639,11 @@ export function runSim(
 
   let gachaDraws = 0;
   let gachaGrandWins = 0;
+  let grandPrizeDay: number | null = null;
   let grandMilestoneDone = false;
   let seasonWon = false; // 本季大奖已到手（仍可继续抽小奖）
+  let totalPayYuan = 0;
+  let payYuanToday = 0;
 
   const rollGachaPrize = (): (typeof gachaPrizes)[number] => {
     const pool = seasonWon ? nonGrandPrizes : gachaPrizes;
@@ -659,49 +667,83 @@ export function runSim(
     }
   };
 
-  const doGacha = (day: number): void => {
-    if (!mods.gacha || day < cfg.gacha.startDay || strat.gachaPerDay <= 0 || cfg.gacha.price <= 0)
-      return;
-    const avail = Math.floor((st.gold - strat.gachaFloor) / cfg.gacha.price);
-    const draws = Math.min(strat.gachaPerDay, Math.max(0, avail));
-    if (draws <= 0) return;
+  const markGrandWinMc = (day: number): void => {
+    gachaGrandWins += 1;
+    seasonWon = true;
+    if (grandPrizeDay === null) grandPrizeDay = day;
+    if (!grandMilestoneDone) {
+      milestones.push({ label: '抽中终极大奖', day });
+      grandMilestoneDone = true;
+    }
+  };
 
+  /** 金币不足时为抽奖付费充值；返回实际支付元数 */
+  const rechargeForDrawGold = (goldShortfall: number): number => {
+    if (
+      !mods.pay ||
+      !strat.rechargeForGacha ||
+      goldShortfall <= 0 ||
+      cfg.pay.goldPerYuan <= 0
+    ) {
+      return 0;
+    }
+    const yuanNeeded = Math.ceil(goldShortfall / cfg.pay.goldPerYuan);
+    let yuan = yuanNeeded;
+    if (strat.maxPayYuanPerDay > 0) {
+      yuan = Math.min(yuan, Math.max(0, strat.maxPayYuanPerDay - payYuanToday));
+    }
+    if (strat.maxPayYuanTotal > 0) {
+      yuan = Math.min(yuan, Math.max(0, strat.maxPayYuanTotal - totalPayYuan));
+    }
+    if (yuan <= 0) return 0;
+    const gold = yuan * cfg.pay.goldPerYuan;
+    st.gold += gold;
+    earn('recharge', gold);
+    payYuanToday += yuan;
+    totalPayYuan += yuan;
+    return yuan;
+  };
+
+  const canAffordOneDraw = (): boolean =>
+    st.gold >= strat.gachaFloor + cfg.gacha.price;
+
+  const performOneDraw = (day: number): void => {
+    st.gold -= cfg.gacha.price;
+    st.expense.gacha += cfg.gacha.price;
+    gachaDraws++;
     if (rng) {
-      for (let i = 0; i < draws; i++) {
-        st.gold -= cfg.gacha.price;
-        st.expense.gacha += cfg.gacha.price;
-        gachaDraws++;
-        const prize = rollGachaPrize();
-        if (prize.gold > 0) earn('gacha', prize.gold);
-        if (prize.isGrand) {
-          gachaGrandWins++;
-          seasonWon = true;
-          if (!grandMilestoneDone) {
-            milestones.push({ label: '抽中终极大奖', day });
-            grandMilestoneDone = true;
-          }
-        }
-      }
+      const prize = rollGachaPrize();
+      if (prize.gold > 0) earn('gacha', prize.gold);
+      if (prize.isGrand) markGrandWinMc(day);
     } else {
-      for (let i = 0; i < draws; i++) {
-        st.gold -= cfg.gacha.price;
-        st.expense.gacha += cfg.gacha.price;
-        gachaDraws++;
-        const evGold =
-          seasonNoWinProb * gachaEvReturn + (1 - seasonNoWinProb) * nonGrandEvReturn;
-        earn('gacha', evGold);
-        gachaGrandWins += seasonNoWinProb * gachaGrandProb;
-        seasonNoWinProb *= 1 - gachaGrandProb;
-        if (seasonNoWinProb < 1e-6) {
-          seasonWon = true;
-          seasonNoWinProb = 0;
-        }
-      }
-      everNoWinProb *= Math.pow(1 - gachaGrandProb, draws);
+      const evGold =
+        seasonNoWinProb * gachaEvReturn + (1 - seasonNoWinProb) * nonGrandEvReturn;
+      earn('gacha', evGold);
+      const pGrand = seasonNoWinProb * gachaGrandProb;
+      gachaGrandWins += pGrand;
+      seasonNoWinProb *= 1 - gachaGrandProb;
+      if (seasonNoWinProb < 1e-6) seasonWon = true;
+      everNoWinProb *= 1 - gachaGrandProb;
       if (!grandMilestoneDone && 1 - everNoWinProb >= 0.5) {
         milestones.push({ label: '抽中终极大奖', day });
         grandMilestoneDone = true;
+        if (grandPrizeDay === null) grandPrizeDay = day;
+        seasonWon = true;
       }
+    }
+  };
+
+  const doGacha = (day: number): void => {
+    if (!mods.gacha || day < cfg.gacha.startDay || strat.gachaPerDay <= 0 || cfg.gacha.price <= 0)
+      return;
+
+    for (let i = 0; i < strat.gachaPerDay; i++) {
+      if (!canAffordOneDraw()) {
+        const need = strat.gachaFloor + cfg.gacha.price - st.gold;
+        rechargeForDrawGold(need);
+      }
+      if (!canAffordOneDraw()) break;
+      performOneDraw(day);
     }
   };
 
@@ -743,6 +785,7 @@ export function runSim(
     st.hiresToday = 0;
     st.halvedToday = false;
     st.lostWorkToday = 0;
+    payYuanToday = 0;
 
     // 当日洗护套装额度与使用阈值
     if (mods.washKit) {
@@ -834,6 +877,8 @@ export function runSim(
     outfitOwnedSpend: totalExpense.outfit,
     gachaDraws,
     gachaGrandWins,
+    grandPrizeDay,
+    totalPayYuan,
     affordDays,
   };
 }

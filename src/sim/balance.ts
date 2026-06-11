@@ -1,4 +1,6 @@
+import type { SimConfig, StrategyConfig } from './config';
 import type { RunResult } from './engine';
+import { analyzeGachaTarget } from './gachaAnalysis';
 
 export type BalanceStatus = 'good' | 'warn' | 'bad';
 
@@ -23,7 +25,11 @@ function status3(v: number, goodMax: number, warnMax: number, lowerBetter = true
 }
 
 /** 从单次模拟结果提取平衡指标（聚焦普通玩家或任意策略） */
-export function computeBalanceMetrics(run: RunResult): BalanceMetric[] {
+export function computeBalanceMetrics(
+  run: RunResult,
+  cfg: SimConfig,
+  strat: StrategyConfig,
+): BalanceMetric[] {
   const days = run.days;
   const totalIn = Object.values(run.totalIncome).reduce((a, b) => a + b, 0);
   const totalEx = Object.values(run.totalExpense).reduce((a, b) => a + b, 0);
@@ -40,6 +46,9 @@ export function computeBalanceMetrics(run: RunResult): BalanceMetric[] {
 
   const gachaSink = run.totalExpense.gacha - run.totalIncome.gacha;
   const gachaSinkRatio = totalIn > 0 ? gachaSink / totalIn : 0;
+  const gachaTarget = analyzeGachaTarget(cfg, strat, run);
+  const targetGrand = cfg.gacha.targetGrandDays;
+  const grandDay = run.grandPrizeDay;
 
   return [
     {
@@ -93,6 +102,42 @@ export function computeBalanceMetrics(run: RunResult): BalanceMetric[] {
             : gachaSinkRatio >= 0.08
               ? 'warn'
               : 'bad',
+    },
+    {
+      id: 'grand',
+      label: '终极大奖达成天数',
+      value: gachaTarget.grandLabel,
+      target: `≤ ${targetGrand} 天（设计目标）`,
+      status:
+        grandDay === null
+          ? 'bad'
+          : grandDay <= targetGrand
+            ? 'good'
+            : grandDay <= targetGrand * 1.3
+              ? 'warn'
+              : 'bad',
+      hint: gachaTarget.payHint,
+    },
+    {
+      id: 'pay',
+      label: '付费充值（抽奖补币）',
+      value:
+        run.totalPayYuan > 0
+          ? `¥${run.totalPayYuan.toFixed(0)}（换 ${Math.round(run.totalIncome.recharge)} 币）`
+          : '¥0',
+      target: '按策略画像评估是否合理',
+      status:
+        run.totalPayYuan <= 0
+          ? 'good'
+          : run.totalPayYuan <= 300
+            ? 'good'
+            : run.totalPayYuan <= 800
+              ? 'warn'
+              : 'bad',
+      hint:
+        run.totalPayYuan > 500
+          ? '付费压力偏高：检查充值上限或提升免费金币产出'
+          : undefined,
     },
   ];
 }
