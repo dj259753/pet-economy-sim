@@ -81,12 +81,17 @@ export interface JobsConfig {
 
 export interface HireConfig {
   dailyLimit: number; // 每日主动雇佣次数上限
-  interruptProb: number; // 被雇佣者上线打断概率（打断则主雇者收益减半）
-  bonusByTier: Range[]; // 按打工等级的加成百分比区间，5 档
+  /** 被雇佣者上线概率：增量收益（本金×加成%）由雇主与被雇者平分 */
+  interruptProb: number;
+  bonusByTier: Range[]; // 被雇佣者档位对应的加成%区间（见习8~28% … 大师24~44%）
+  startupGoldByTier: [number, number, number, number, number]; // 启动费（金币）→ 从雇主扣、进被雇者口袋
+  interruptSplit: number; // 上线时雇员分得增量部分的比例，默认 0.5
 }
 
 export interface HiredByConfig {
   dailyLimit: number; // 每日可被他人雇佣的次数上限
+  /** 被动被雇时假设的雇主打工本金（按四订单均值）；0=用本档位 payRows 四类订单中值 */
+  referenceBaseByTier: [number, number, number, number, number];
 }
 
 export interface AdventureEvent {
@@ -122,6 +127,7 @@ export interface WashKitConfig {
   friendMax: number;
   thresholdMin: number; // 体力降到该区间内时使用
   thresholdMax: number;
+  staminaGain: number; // 每次洗护恢复体力
 }
 
 export type OutfitCategory = 'hat' | 'clothes' | 'accessory' | 'background';
@@ -402,12 +408,12 @@ export const DEFAULT_CONFIG: SimConfig = {
     },
     // 平衡版：见习不变，高档位再压 ~10%（大师快140）；小乞丐略提垫前期
     payRows: [
-      { kuai: fixed(100), wen: r(80, 160), guaji: r(140, 180), du: r(20, 220) },
-      { kuai: fixed(110), wen: r(90, 170), guaji: r(150, 185), du: r(24, 235) },
-      { kuai: fixed(120), wen: r(100, 190), guaji: r(165, 210), du: r(32, 255) },
-      { kuai: fixed(130), wen: r(115, 215), guaji: r(180, 230), du: r(36, 285) },
-      { kuai: fixed(140), wen: r(125, 230), guaji: r(195, 250), du: r(45, 300) },
-      { kuai: fixed(80), wen: r(25, 130), guaji: r(85, 150), du: r(12, 300) },
+      { kuai: fixed(100), wen: r(120, 200), guaji: r(140, 200), du: r(24, 240) },
+      { kuai: fixed(120), wen: r(140, 240), guaji: r(160, 220), du: r(28, 280) },
+      { kuai: fixed(140), wen: r(160, 280), guaji: r(180, 240), du: r(32, 320) },
+      { kuai: fixed(160), wen: r(180, 320), guaji: r(200, 260), du: r(36, 360) },
+      { kuai: fixed(180), wen: r(200, 360), guaji: r(220, 280), du: r(40, 400) },
+      { kuai: fixed(90), wen: r(100, 180), guaji: r(120, 170), du: r(20, 220) },
     ],
     jobs: [
       dualJob('huajia', '🎨 画家', 'mei', 'zhi', [
@@ -456,11 +462,14 @@ export const DEFAULT_CONFIG: SimConfig = {
   hire: {
     dailyLimit: 6,
     interruptProb: 0.3,
-    bonusByTier: [r(4, 16), r(5, 18), r(6, 20), r(8, 22), r(10, 26)],
+    bonusByTier: [r(8, 28), r(12, 32), r(16, 36), r(20, 40), r(24, 44)],
+    startupGoldByTier: [4, 6, 9, 12, 15],
+    interruptSplit: 0.5,
   },
 
   hiredBy: {
     dailyLimit: 6,
+    referenceBaseByTier: [0, 0, 0, 0, 0],
   },
 
   // ====== 以下为文档留白、由模拟器给出的建议值（全部可调） ======
@@ -499,6 +508,7 @@ export const DEFAULT_CONFIG: SimConfig = {
     friendMax: 5,
     thresholdMin: 30,
     thresholdMax: 40,
+    staminaGain: 30,
   },
 
   outfit: {

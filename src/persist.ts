@@ -83,6 +83,45 @@ function migrateOutfitConfig(cfg: SimConfig): void {
   }
 }
 
+function migrateHireWash(cfg: SimConfig): void {
+  if (cfg.washKit.staminaGain === undefined) {
+    cfg.washKit.staminaGain = DEFAULT_CONFIG.washKit.staminaGain;
+  }
+  const hire = cfg.hire as SimConfig['hire'] & {
+    costYuanByTier?: number[];
+    startupYuanByTier?: number[];
+  };
+  if (!hire.startupGoldByTier && hire.startupYuanByTier) {
+    hire.startupGoldByTier = hire.startupYuanByTier as [
+      number,
+      number,
+      number,
+      number,
+      number,
+    ];
+    delete hire.startupYuanByTier;
+  }
+  if (!hire.startupGoldByTier && hire.costYuanByTier) {
+    hire.startupGoldByTier = hire.costYuanByTier as [
+      number,
+      number,
+      number,
+      number,
+      number,
+    ];
+    delete hire.costYuanByTier;
+  }
+  if (!hire.startupGoldByTier) {
+    hire.startupGoldByTier = structuredClone(DEFAULT_CONFIG.hire.startupGoldByTier);
+  }
+  if (hire.interruptSplit === undefined) {
+    hire.interruptSplit = DEFAULT_CONFIG.hire.interruptSplit;
+  }
+  if (!cfg.hiredBy.referenceBaseByTier) {
+    cfg.hiredBy.referenceBaseByTier = structuredClone(DEFAULT_CONFIG.hiredBy.referenceBaseByTier);
+  }
+}
+
 function migratePayAndGacha(cfg: SimConfig): void {
   if (!cfg.pay) {
     cfg.pay = structuredClone(DEFAULT_CONFIG.pay);
@@ -111,6 +150,7 @@ export function normalizeLoadedConfig(patch: Partial<SimConfig>): SimConfig {
   migrateStrategies(config);
   migrateStageConfig(config);
   migrateOutfitConfig(config);
+  migrateHireWash(config);
   migratePayAndGacha(config);
   return config;
 }

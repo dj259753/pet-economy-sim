@@ -38,11 +38,12 @@ export function computeBalanceMetrics(
   const early = days.slice(0, 30);
   const earlyNet = early.length ? early.reduce((s, d) => s + d.net, 0) / early.length : 0;
 
-  const d7 = days[6]?.gold ?? 0;
-  const lateStart = days[274]?.gold ?? 0;
+  const d10 = days[9]?.gold ?? 0;
+  const lateWindow = Math.min(90, Math.max(1, Math.floor(days.length / 3)));
+  const lateStart = days[days.length - 1 - lateWindow]?.gold ?? 0;
   const lateEnd = days[days.length - 1]?.gold ?? 0;
-  const lateDailyGrowth = lateStart > 0 ? (lateEnd - lateStart) / 90 : 0;
-  const lateGrowthPct = lateStart > 0 ? ((lateEnd / lateStart - 1) * 100) / 90 : 0;
+  const lateDailyGrowth = lateStart > 0 ? (lateEnd - lateStart) / lateWindow : 0;
+  const lateGrowthPct = lateStart > 0 ? ((lateEnd / lateStart - 1) * 100) / lateWindow : 0;
 
   const gachaSink = run.totalExpense.gacha - run.totalIncome.gacha;
   const gachaSinkRatio = totalIn > 0 ? gachaSink / totalIn : 0;
@@ -61,10 +62,10 @@ export function computeBalanceMetrics(
     },
     {
       id: 'grad',
-      label: '大学毕业时金币（第7天）',
-      value: `${Math.round(d7)}`,
-      target: '≥ 500',
-      status: d7 >= 500 ? 'good' : d7 >= 200 ? 'warn' : 'bad',
+      label: '开局第10天金币',
+      value: `${Math.round(d10)}`,
+      target: '≥ 150（够一次进修+缓冲）',
+      status: d10 >= 150 ? 'good' : d10 >= 50 ? 'warn' : 'bad',
     },
     {
       id: 'steady',
@@ -84,9 +85,9 @@ export function computeBalanceMetrics(
     },
     {
       id: 'late',
-      label: '后期金币增速（第275~365天）',
+      label: `后期金币增速（最后${lateWindow}天）`,
       value: `${lateDailyGrowth >= 0 ? '+' : ''}${Math.round(lateDailyGrowth)}/天（${lateGrowthPct.toFixed(2)}%/天）`,
-      target: '趋近 0',
+      target: '趋近 0（盈余被抽奖回收）',
       status: status3(lateDailyGrowth, 80, 200, true),
     },
     {

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-06-11T09:28:57.168Z",
+  "savedAt": "2026-06-12T10:11:21.195Z",
   "config": {
     "modules": {
       "hire": true,
@@ -21,7 +21,7 @@
       "foodGain": 10,
       "initialGold": 50,
       "dailyActionLimit": 4,
-      "tutorialGold": 300,
+      "tutorialGold": 150,
       "tutorialAttr": 1
     },
     "stages": [
@@ -304,110 +304,110 @@
       "payRows": [
         {
           "kuai": {
-            "min": 100,
-            "max": 100
+            "min": 40,
+            "max": 40
           },
           "wen": {
-            "min": 80,
-            "max": 160
+            "min": 45,
+            "max": 65
           },
           "guaji": {
-            "min": 140,
-            "max": 180
+            "min": 66,
+            "max": 74
           },
           "du": {
-            "min": 20,
+            "min": 14,
+            "max": 126
+          }
+        },
+        {
+          "kuai": {
+            "min": 55,
+            "max": 55
+          },
+          "wen": {
+            "min": 62,
+            "max": 90
+          },
+          "guaji": {
+            "min": 91,
+            "max": 101
+          },
+          "du": {
+            "min": 19,
+            "max": 173
+          }
+        },
+        {
+          "kuai": {
+            "min": 70,
+            "max": 70
+          },
+          "wen": {
+            "min": 79,
+            "max": 113
+          },
+          "guaji": {
+            "min": 116,
+            "max": 128
+          },
+          "du": {
+            "min": 24,
             "max": 220
           }
         },
         {
           "kuai": {
-            "min": 110,
-            "max": 110
-          },
-          "wen": {
-            "min": 90,
-            "max": 170
-          },
-          "guaji": {
-            "min": 150,
-            "max": 185
-          },
-          "du": {
-            "min": 24,
-            "max": 235
-          }
-        },
-        {
-          "kuai": {
-            "min": 120,
-            "max": 120
-          },
-          "wen": {
-            "min": 100,
-            "max": 190
-          },
-          "guaji": {
-            "min": 165,
-            "max": 210
-          },
-          "du": {
-            "min": 32,
-            "max": 255
-          }
-        },
-        {
-          "kuai": {
-            "min": 130,
-            "max": 130
-          },
-          "wen": {
-            "min": 115,
-            "max": 215
-          },
-          "guaji": {
-            "min": 180,
-            "max": 230
-          },
-          "du": {
-            "min": 36,
-            "max": 285
-          }
-        },
-        {
-          "kuai": {
-            "min": 140,
-            "max": 140
-          },
-          "wen": {
-            "min": 125,
-            "max": 230
-          },
-          "guaji": {
-            "min": 195,
-            "max": 250
-          },
-          "du": {
-            "min": 45,
-            "max": 300
-          }
-        },
-        {
-          "kuai": {
-            "min": 80,
-            "max": 80
-          },
-          "wen": {
-            "min": 25,
-            "max": 130
-          },
-          "guaji": {
             "min": 85,
-            "max": 150
+            "max": 85
+          },
+          "wen": {
+            "min": 96,
+            "max": 138
+          },
+          "guaji": {
+            "min": 142,
+            "max": 156
           },
           "du": {
-            "min": 12,
-            "max": 300
+            "min": 30,
+            "max": 268
+          }
+        },
+        {
+          "kuai": {
+            "min": 100,
+            "max": 100
+          },
+          "wen": {
+            "min": 113,
+            "max": 163
+          },
+          "guaji": {
+            "min": 166,
+            "max": 184
+          },
+          "du": {
+            "min": 35,
+            "max": 315
+          }
+        },
+        {
+          "kuai": {
+            "min": 30,
+            "max": 30
+          },
+          "wen": {
+            "min": 33,
+            "max": 49
+          },
+          "guaji": {
+            "min": 50,
+            "max": 56
+          },
+          "du": {
+            "min": 11,
+            "max": 95
           }
         }
       ],
@@ -767,33 +767,62 @@
       ]
     },
     "hire": {
-      "dailyLimit": 6,
+      "dailyLimit": 5,
       "interruptProb": 0.3,
       "bonusByTier": [
         {
-          "min": 4,
-          "max": 16
-        },
-        {
-          "min": 5,
-          "max": 18
-        },
-        {
-          "min": 6,
-          "max": 20
-        },
-        {
           "min": 8,
-          "max": 22
+          "max": 28
         },
         {
-          "min": 10,
-          "max": 26
+          "min": 12,
+          "max": 32
+        },
+        {
+          "min": 16,
+          "max": 36
+        },
+        {
+          "min": 20,
+          "max": 40
+        },
+        {
+          "min": 24,
+          "max": 44
         }
+      ],
+      "startupGoldByTier": [
+        6,
+        9,
+        12,
+        15,
+        18
+      ],
+      "interruptSplit": 0.5,
+      "startupYuanByTier": [
+        4,
+        6,
+        9,
+        12,
+        15
+      ],
+      "costYuanByTier": [
+        4,
+        6,
+        9,
+        12,
+        15
       ]
     },
     "hiredBy": {
-      "dailyLimit": 3
+      "dailyLimit": 5,
+      "referenceBaseByTier": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     "adventure": {
       "costGold": 10,
@@ -847,7 +876,7 @@
       "stamina": 15,
       "winProb": 0.7,
       "winGold": 15,
-      "loseGold": 0
+      "loseGold": 10
     },
     "sick": {
       "intervalDays": 21,
@@ -860,7 +889,8 @@
       "friendMin": 3,
       "friendMax": 5,
       "thresholdMin": 30,
-      "thresholdMax": 40
+      "thresholdMax": 40,
+      "staminaGain": 30
     },
     "outfit": {
       "prices": {
@@ -883,8 +913,8 @@
       },
       "reserve": 200,
       "initialCounts": [
-        25,
-        3
+        8,
+        2
       ],
       "releaseIntervalDays": [
         14,
@@ -895,40 +925,40 @@
       "goldPerYuan": 100
     },
     "gacha": {
-      "price": 160,
+      "price": 480,
       "startDay": 70,
       "seasonDays": 90,
-      "targetGrandDays": 90,
+      "targetGrandDays": 180,
       "prizes": [
         {
-          "name": "终极大奖（限定外观）",
-          "prob": 0.3,
+          "name": "终极大奖（限定服饰）",
+          "prob": 0.35,
           "gold": 0,
           "isGrand": true
         },
         {
-          "name": "金币暴击 +400",
-          "prob": 1,
+          "name": "金币暴击 +2000",
+          "prob": 1.5,
+          "gold": 2000
+        },
+        {
+          "name": "大金袋 +1000",
+          "prob": 5,
+          "gold": 1000
+        },
+        {
+          "name": "小金袋 +400",
+          "prob": 12,
           "gold": 400
         },
         {
-          "name": "大金袋 +150",
-          "prob": 2,
+          "name": "安慰金 +150",
+          "prob": 30,
           "gold": 150
         },
         {
-          "name": "小金袋 +60",
-          "prob": 5,
-          "gold": 60
-        },
-        {
-          "name": "安慰金 +20",
-          "prob": 25,
-          "gold": 20
-        },
-        {
           "name": "谢谢惠顾（纪念碎片）",
-          "prob": 48.7,
+          "prob": 51.15,
           "gold": 0
         }
       ]
@@ -965,7 +995,7 @@
         "enabled": true,
         "color": "#60a5fa",
         "dailyActions": 2,
-        "orderPref": "kuai",
+        "orderPref": "wen",
         "adventuresPerDay": 1,
         "pksPerDay": 1,
         "targetJobId": "mingxing",
@@ -979,7 +1009,7 @@
         "selfOnlineProb": 0.3,
         "sickLostWork": 1,
         "gachaPerDay": 1,
-        "gachaFloor": 300,
+        "gachaFloor": 600,
         "rechargeForGacha": false,
         "maxPayYuanPerDay": 0,
         "maxPayYuanTotal": 0
@@ -1003,11 +1033,11 @@
         "beHiredPerDay": 3,
         "selfOnlineProb": 0.5,
         "sickLostWork": 0.5,
-        "gachaPerDay": 4,
-        "gachaFloor": 5000,
-        "rechargeForGacha": false,
-        "maxPayYuanPerDay": 0,
-        "maxPayYuanTotal": 0
+        "gachaPerDay": 2,
+        "gachaFloor": 1200,
+        "rechargeForGacha": true,
+        "maxPayYuanPerDay": 10,
+        "maxPayYuanTotal": 128
       },
       {
         "id": "grinder",
@@ -1028,8 +1058,8 @@
         "beHiredPerDay": 4,
         "selfOnlineProb": 0.7,
         "sickLostWork": 0,
-        "gachaPerDay": 8,
-        "gachaFloor": 6000,
+        "gachaPerDay": 3,
+        "gachaFloor": 1800,
         "rechargeForGacha": false,
         "maxPayYuanPerDay": 0,
         "maxPayYuanTotal": 0
@@ -1040,7 +1070,7 @@
         "enabled": true,
         "color": "#f87171",
         "dailyActions": 4,
-        "orderPref": "guaji",
+        "orderPref": "auto",
         "adventuresPerDay": 8,
         "pksPerDay": 10,
         "targetJobId": "wushu",
@@ -1050,14 +1080,14 @@
           0.85,
           0.75
         ],
-        "beHiredPerDay": 4,
+        "beHiredPerDay": 5,
         "selfOnlineProb": 0.85,
         "sickLostWork": 0,
-        "gachaPerDay": 12,
-        "gachaFloor": 8000,
-        "rechargeForGacha": false,
-        "maxPayYuanPerDay": 0,
-        "maxPayYuanTotal": 0
+        "gachaPerDay": 6,
+        "gachaFloor": 2400,
+        "rechargeForGacha": true,
+        "maxPayYuanPerDay": 50,
+        "maxPayYuanTotal": 648
       }
     ]
   },

@@ -66,6 +66,7 @@ export interface ExpenseBreakdown {
   pk: number;
   outfit: number;
   gacha: number; // 抽奖花费
+  hireCost: number; // 主动雇佣一次性花费（金币）
 }
 
 export const INCOME_KEYS: { key: keyof IncomeBreakdown; name: string; color: string }[] = [
@@ -89,6 +90,7 @@ export const EXPENSE_KEYS: { key: keyof ExpenseBreakdown; name: string; color: s
   { key: 'pk', name: 'PK损失', color: '#e11d48' },
   { key: 'outfit', name: '装扮', color: '#0284c7' },
   { key: 'gacha', name: '抽奖', color: '#a21caf' },
+  { key: 'hireCost', name: '雇佣费', color: '#64748b' },
 ];
 
 export interface DayRecord {
@@ -166,6 +168,7 @@ const zeroExpense = (): ExpenseBreakdown => ({
   pk: 0,
   outfit: 0,
   gacha: 0,
+  hireCost: 0,
 });
 
 function addBreakdown<T extends { [K in keyof T]: number }>(total: T, day: T): void {
@@ -269,16 +272,16 @@ export function runSim(
     st.attrs[key] = Math.min(cfg.jobsCfg.attrCap, st.attrs[key] + v);
   };
 
-  /** 体力低于阈值时使用洗护套装回满（每日次数有限） */
+  /** 体力低于阈值时使用洗护套装（每次 +staminaGain，每日次数有限） */
   const maybeWash = (): void => {
     if (!mods.washKit) return;
+    const gain = cfg.washKit.staminaGain;
     while (st.stamina <= st.washThreshold && st.washesLeft > 0) {
       if (st.washesLeft >= 1) {
-        st.stamina = cfg.base.staminaMax;
+        st.stamina = Math.min(cfg.base.staminaMax, st.stamina + gain);
         st.washesLeft -= 1;
       } else {
-        // 期望模式下的小数套数：按比例回复
-        st.stamina += st.washesLeft * (cfg.base.staminaMax - st.stamina);
+        st.stamina = Math.min(cfg.base.staminaMax, st.stamina + st.washesLeft * gain);
         st.washesLeft = 0;
       }
     }
@@ -395,9 +398,53 @@ export function runSim(
   /** payRow 5 是万象见习彩蛋行，雇佣加成按见习档（0）计算 */
   const hireTierOf = (payRow: number): number => (payRow > 4 ? 0 : payRow);
 
+  const hiredTier = (payRow: number): number => hireTierOf(payRow);
+
+  const startupGold = (payRow: number): number =>
+    cfg.hire.startupGoldByTier[hiredTier(payRow)] ?? 0;
+
+  /** 被雇者加成%（0~1） */
+  const sampleHirePct = (payRow: number): number =>
+    sampleRange(rng, cfg.hire.bonusByTier[hiredTier(payRow)]) / 100;
+
+  const hirePctMid = (payRow: number): number =>
+    rangeMid(cfg.hire.bonusByTier[hiredTier(payRow)]) / 100;
+
+  /**
+   * 主动雇佣：增量 = 本金×加成%。
+   * 未上线：雇主拿全部增量；上线：雇主拿增量×(1-split)，雇员拿增量×split。
+   */
+  const resolveHireIncremental = (
+    base: number,
+    payRow: number,
+  ): { employerBonus: number; employeeShare: number; interrupted: boolean } => {
+    const incremental = base * sampleHirePct(payRow);
+    if (rng) {
+      const interrupted = rng() < cfg.hire.interruptProb;
+      if (interrupted) {
+        const emp = incremental * cfg.hire.interruptSplit;
+        return { employerBonus: incremental - emp, employeeShare: emp, interrupted: true };
+      }
+      return { employerBonus: incremental, employeeShare: 0, interrupted: false };
+    }
+    const emp = incremental * cfg.hire.interruptProb * cfg.hire.interruptSplit;
+    return { employerBonus: incremental - emp, employeeShare: emp, interrupted: false };
+  };
+
   const hireEvFactor = (payRow: number): number => {
-    const range = cfg.hire.bonusByTier[hireTierOf(payRow)];
-    return (rangeMid(range) / 100) * (1 - 0.5 * cfg.hire.interruptProb);
+    const inc = hirePctMid(payRow);
+    const emp = inc * cfg.hire.interruptProb * cfg.hire.interruptSplit;
+    return inc - emp;
+  };
+
+  const referenceEmployerBase = (payRow: number): number => {
+    const tier = hiredTier(payRow);
+    const ref = cfg.hiredBy.referenceBaseByTier[tier];
+    if (ref > 0) return ref;
+    const row = cfg.jobsCfg.payRows[payRow];
+    return (
+      (rangeMid(row.kuai) + rangeMid(row.wen) + rangeMid(row.guaji) + rangeMid(row.du)) / 4
+    );
   };
 
   const bestOrderKey = (payRow: number, canHire: boolean): OrderKey => {
@@ -443,24 +490,21 @@ export function runSim(
 
   const doWork = (day: number): boolean => {
     const payRow = currentPayRow();
-    const canHire = mods.hire && strat.useHire && st.hiresToday < cfg.hire.dailyLimit;
+    const wantsHire = mods.hire && strat.useHire && st.hiresToday < cfg.hire.dailyLimit;
+    const startup = wantsHire ? startupGold(payRow) : 0;
+    const canHire = wantsHire && st.gold >= startup;
     const orderKey: OrderKey =
       strat.orderPref === 'auto' ? bestOrderKey(payRow, canHire) : strat.orderPref;
     const meta = cfg.jobsCfg.orderMeta[orderKey];
-    if (!ensureStamina(meta.stamina, 0)) return false;
+    if (!ensureStamina(meta.stamina, canHire ? startup : 0)) return false;
     st.stamina -= meta.stamina;
     const base = sampleRange(rng, cfg.jobsCfg.payRows[payRow][orderKey]);
     let hireBonus = 0;
     if (canHire) {
+      st.gold -= startup;
+      st.expense.hireCost += startup;
       st.hiresToday++;
-      const range = cfg.hire.bonusByTier[hireTierOf(payRow)];
-      let pct = sampleRange(rng, range) / 100;
-      if (rng) {
-        if (rng() < cfg.hire.interruptProb) pct /= 2;
-      } else {
-        pct *= 1 - 0.5 * cfg.hire.interruptProb;
-      }
-      hireBonus = base * pct;
+      hireBonus = resolveHireIncremental(base, payRow).employerBonus;
     }
     earn('work', base);
     earn('hire', hireBonus);
@@ -559,25 +603,32 @@ export function runSim(
     return true;
   };
 
-  /** 被雇佣分成：他人雇佣自己时，若上线打断则分得对方加成的一半 */
+  /**
+   * 被动被雇佣：他人雇我打工 n 次/天。
+   * 每次：启动费进我口袋；若我上线，再分得 雇主本金×我的加成%×interruptSplit。
+   */
   const doHiredBy = (): void => {
     if (!mods.hiredBy || st.phase !== 3 || strat.beHiredPerDay <= 0) return;
     const payRow = currentPayRow();
-    const row = cfg.jobsCfg.payRows[payRow];
-    // 朋友圈水平与自己相近：雇主基础收益取自己档位四类订单的平均期望
-    const baseMid =
-      (rangeMid(row.kuai) + rangeMid(row.wen) + rangeMid(row.guaji) + rangeMid(row.du)) / 4;
-    const range = cfg.hire.bonusByTier[hireTierOf(payRow)];
+    const tier = hiredTier(payRow);
+    const startup = startupGold(payRow);
+    const employerBase = referenceEmployerBase(payRow);
     const n = Math.min(strat.beHiredPerDay, cfg.hiredBy.dailyLimit);
     if (rng) {
       for (let i = 0; i < n; i++) {
+        earn('hiredBy', startup);
         if (rng() < strat.selfOnlineProb) {
-          const pct = sampleRange(rng, range) / 100;
-          earn('hiredBy', (baseMid * pct) / 2);
+          const pct = sampleRange(rng, cfg.hire.bonusByTier[tier]) / 100;
+          earn('hiredBy', employerBase * pct * cfg.hire.interruptSplit);
         }
       }
     } else {
-      earn('hiredBy', n * strat.selfOnlineProb * ((rangeMid(range) / 100) * baseMid) / 2);
+      const pctMid = hirePctMid(payRow);
+      earn('hiredBy', n * startup);
+      earn(
+        'hiredBy',
+        n * strat.selfOnlineProb * employerBase * pctMid * cfg.hire.interruptSplit,
+      );
     }
   };
 
@@ -631,11 +682,6 @@ export function runSim(
     0,
   );
   const nonGrandPrizes = gachaPrizes.filter((p) => !p.isGrand);
-  const nonGrandWeight = nonGrandPrizes.reduce((s, p) => s + p.prob, 0) || 1;
-  const nonGrandEvReturn = nonGrandPrizes.reduce(
-    (s, p) => s + (p.prob / nonGrandWeight) * p.gold,
-    0,
-  );
 
   let gachaDraws = 0;
   let gachaGrandWins = 0;
@@ -707,28 +753,31 @@ export function runSim(
   const canAffordOneDraw = (): boolean =>
     st.gold >= strat.gachaFloor + cfg.gacha.price;
 
+  /**
+   * 商业化模型：抽奖是为了本季限定大奖，中奖后本季停抽、攒钱等下季。
+   * MC：seasonWon 即停；EV：用「本季未中概率」作为仍在抽的人群质量，按比例缩放花费/返还。
+   */
   const performOneDraw = (day: number): void => {
-    st.gold -= cfg.gacha.price;
-    st.expense.gacha += cfg.gacha.price;
-    gachaDraws++;
     if (rng) {
+      st.gold -= cfg.gacha.price;
+      st.expense.gacha += cfg.gacha.price;
+      gachaDraws++;
       const prize = rollGachaPrize();
       if (prize.gold > 0) earn('gacha', prize.gold);
       if (prize.isGrand) markGrandWinMc(day);
     } else {
-      const evGold =
-        seasonNoWinProb * gachaEvReturn + (1 - seasonNoWinProb) * nonGrandEvReturn;
-      earn('gacha', evGold);
-      const pGrand = seasonNoWinProb * gachaGrandProb;
-      gachaGrandWins += pGrand;
+      const pActive = seasonNoWinProb;
+      st.gold -= cfg.gacha.price * pActive;
+      st.expense.gacha += cfg.gacha.price * pActive;
+      gachaDraws += pActive;
+      earn('gacha', gachaEvReturn * pActive);
+      gachaGrandWins += pActive * gachaGrandProb;
       seasonNoWinProb *= 1 - gachaGrandProb;
-      if (seasonNoWinProb < 1e-6) seasonWon = true;
       everNoWinProb *= 1 - gachaGrandProb;
       if (!grandMilestoneDone && 1 - everNoWinProb >= 0.5) {
         milestones.push({ label: '抽中终极大奖', day });
         grandMilestoneDone = true;
         if (grandPrizeDay === null) grandPrizeDay = day;
-        seasonWon = true;
       }
     }
   };
@@ -738,6 +787,8 @@ export function runSim(
       return;
 
     for (let i = 0; i < strat.gachaPerDay; i++) {
+      if (rng && seasonWon) break; // 本季大奖到手 → 停抽攒钱
+      if (!rng && seasonNoWinProb < 1e-4) break;
       if (!canAffordOneDraw()) {
         const need = strat.gachaFloor + cfg.gacha.price - st.gold;
         rechargeForDrawGold(need);

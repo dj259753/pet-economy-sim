@@ -388,18 +388,25 @@ export function ConfigPanel({
             onChange={(v) => update((d) => (d.hire.dailyLimit = v))}
           />
           <NumField
-            label="被打断概率"
+            label="被雇者上线概率"
             value={config.hire.interruptProb}
             step={0.05}
             onChange={(v) => update((d) => (d.hire.interruptProb = v))}
+          />
+          <NumField
+            label="上线时雇员分增量"
+            value={config.hire.interruptSplit}
+            step={0.05}
+            onChange={(v) => update((d) => (d.hire.interruptSplit = v))}
           />
         </Row>
         <table className="mini-table">
           <thead>
             <tr>
-              <th>档位</th>
+              <th>被雇者档位</th>
               <th>加成min%</th>
               <th>加成max%</th>
+              <th>启动费(金币)</th>
             </tr>
           </thead>
           <tbody>
@@ -418,11 +425,21 @@ export function ConfigPanel({
                     onChange={(v) => update((d) => (d.hire.bonusByTier[ti].max = v))}
                   />
                 </td>
+                <td>
+                  <CellInput
+                    value={config.hire.startupGoldByTier[ti]}
+                    onChange={(v) => update((d) => (d.hire.startupGoldByTier[ti] = v))}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <Hint>被打断时主雇者只拿一半加成，期望系数 = 区间中值 × (1 − 打断概率/2)。</Hint>
+        <Hint>
+          主动雇佣：雇主付启动费→被雇者口袋；打工本金全归雇主；增量=本金×加成%。未上线则雇主拿全部增量；上线则增量按
+          {Math.round(config.hire.interruptSplit * 100)}%:{Math.round((1 - config.hire.interruptSplit) * 100)}%
+          分给被雇者与雇主（雇主另有全部本金）。
+        </Hint>
         <div className="stage-title">被雇佣（被动收入）</div>
         <Row>
           <NumField
@@ -432,6 +449,29 @@ export function ConfigPanel({
             onChange={(v) => update((d) => (d.hiredBy.dailyLimit = v))}
           />
         </Row>
+        <table className="mini-table">
+          <thead>
+            <tr>
+              <th>档位</th>
+              <th>假设雇主本金</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            {config.hiredBy.referenceBaseByTier.map((base, ti) => (
+              <tr key={ti}>
+                <td className="name-cell">{PAY_ROW_NAMES[ti]}</td>
+                <td>
+                  <CellInput
+                    value={base}
+                    onChange={(v) => update((d) => (d.hiredBy.referenceBaseByTier[ti] = v))}
+                  />
+                </td>
+                <td className="name-cell">{base > 0 ? '固定' : '四类订单均值'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
         <Hint>
           被他人雇佣时若上线打断，分得雇主本次加成的一半。每个策略的"每日被雇佣次数"和"上线打断概率"在策略区配置；雇主收益按与自己同档位估算。
         </Hint>
@@ -578,6 +618,12 @@ export function ConfigPanel({
         </Row>
         <Row>
           <NumField
+            label="每次恢复体力"
+            value={config.washKit.staminaGain}
+            suffix="点"
+            onChange={(v) => update((d) => (d.washKit.staminaGain = v))}
+          />
+          <NumField
             label="使用阈值min"
             value={config.washKit.thresholdMin}
             suffix="体力"
@@ -590,15 +636,9 @@ export function ConfigPanel({
           />
         </Row>
         <Hint>
-          每天系统送 10 套，1 套自用、9 套送好友；自己平均每天获得好友赠洗{' '}
-          {config.washKit.friendMin}~{config.washKit.friendMax} 次。体力降到阈值区间时使用，
-          一次回满三维。每天可白嫖体力 ≈{' '}
-          {Math.round(
-            (config.washKit.selfPerDay + (config.washKit.friendMin + config.washKit.friendMax) / 2) *
-              (config.base.staminaMax -
-                (config.washKit.thresholdMin + config.washKit.thresholdMax) / 2),
-          )}{' '}
-          点（折合等额食物金币）。
+          体力降到阈值区间时使用洗护，每次 +{config.washKit.staminaGain} 体力（上限{' '}
+          {config.base.staminaMax}）。自用 {config.washKit.selfPerDay} 套/天，好友赠洗{' '}
+          {config.washKit.friendMin}~{config.washKit.friendMax} 次/天。
         </Hint>
       </Section>
 
@@ -805,7 +845,8 @@ function GachaEvHint({ config }: { config: SimConfig }) {
       {medianGold === Infinity ? '∞' : medianGold.toLocaleString()} 金币 / ¥
       {medianYuan === Infinity ? '∞' : medianYuan}）。设计目标：开抽后{' '}
       <strong>{config.gacha.targetGrandDays} 天内</strong>中大奖（右侧仪表盘对比模拟结果）。
-      第 {config.gacha.startDay} 天起上线；奖池每 {config.gacha.seasonDays} 天轮换；中大奖后仍可继续抽小奖。
+      第 {config.gacha.startDay} 天起上线；奖池每 {config.gacha.seasonDays} 天轮换；
+      中大奖后<strong>本季停抽攒钱</strong>，下季新奖池再继续追（肝党攒几季白嫖，氪党当季补币毕业）。
     </Hint>
   );
 }
