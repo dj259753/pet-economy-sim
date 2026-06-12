@@ -207,9 +207,10 @@ export function runSim(
   days: number,
   rng: Rng,
 ): RunResult {
-  const job: JobDef =
+  let job: JobDef =
     cfg.jobsCfg.jobs.find((j) => j.id === strat.targetJobId) ?? cfg.jobsCfg.jobs[0];
   const mods = cfg.modules;
+  const masteredJobs = new Set<string>();
 
   const st: SimState = {
     gold: cfg.base.initialGold,
@@ -466,18 +467,69 @@ export function runSim(
   };
 
   function checkPromotion(day: number): void {
+    // 未入职（小乞丐）：仅属性达标即可入职见习，不要求打工次数
+    if (st.tierIdx < 0) {
+      const trainee = job.tiers[0];
+      if (
+        st.attrs.wu >= trainee.wu &&
+        st.attrs.zhi >= trainee.zhi &&
+        st.attrs.mei >= trainee.mei
+      ) {
+        st.tierIdx = 0;
+        st.workCount = 0;
+        milestones.push({ label: `入职 ${trainee.name}`, day });
+      }
+      return;
+    }
+
     const next = job.tiers[st.tierIdx + 1];
     if (!next) return;
-    const workOk = st.tierIdx === -1 || st.workCount >= next.workFromPrev;
-    if (st.attrs.wu >= next.wu && st.attrs.zhi >= next.zhi && st.attrs.mei >= next.mei && workOk) {
-      st.tierIdx++;
-      st.workCount = 0;
-      milestones.push({
-        label: st.tierIdx === 0 ? `入职 ${next.name}` : `晋升 ${next.name}`,
-        day,
-      });
-    }
+
+    const worksNeeded = job.tiers[st.tierIdx].worksToPromote;
+    if (st.workCount < worksNeeded) return;
+    if (st.attrs.wu < next.wu || st.attrs.zhi < next.zhi || st.attrs.mei < next.mei) return;
+
+    st.tierIdx++;
+    st.workCount = 0;
+    const collecting = masteredJobs.size > 0;
+    milestones.push({
+      label: collecting
+        ? `晋升 ${job.name}·${next.name}`
+        : st.tierIdx === 1
+          ? `入职 ${next.name}`
+          : `晋升 ${next.name}`,
+      day,
+    });
   }
+
+  /** 主职业满级后横向收集：从见习重新打工（低收益），属性继承但须攒够工作经验才能晋升 */
+  const tryCollectNextJob = (day: number): void => {
+    if (!strat.collectJobs) return;
+    if (st.tierIdx < job.tiers.length - 1) return;
+    masteredJobs.add(job.id);
+    let best: JobDef | null = null;
+    let bestDeficit = Infinity;
+    for (const j of cfg.jobsCfg.jobs) {
+      if (masteredJobs.has(j.id)) continue;
+      const top = j.tiers[j.tiers.length - 1];
+      const deficit =
+        Math.max(0, top.wu - st.attrs.wu) +
+        Math.max(0, top.zhi - st.attrs.zhi) +
+        Math.max(0, top.mei - st.attrs.mei);
+      if (deficit < bestDeficit) {
+        bestDeficit = deficit;
+        best = j;
+      }
+    }
+    if (!best) return;
+    job = best;
+    st.tierIdx = 0;
+    st.workCount = 0;
+    milestones.push({
+      label: `转职 ${best.name}·${best.tiers[0].name}（从见习打工起算）`,
+      day,
+    });
+  };
 
   const doWork = (day: number): boolean => {
     const payRow = currentPayRow();
@@ -516,6 +568,7 @@ export function runSim(
   };
 
   const doJobAction = (day: number): boolean => {
+    tryCollectNextJob(day);
     const next = job.tiers[st.tierIdx + 1];
     if (next) {
       const deficit =

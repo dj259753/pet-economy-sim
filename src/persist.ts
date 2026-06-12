@@ -83,6 +83,26 @@ function migrateOutfitConfig(cfg: SimConfig): void {
   }
 }
 
+function migrateJobTiers(cfg: SimConfig): void {
+  const defaults = [10, 18, 32, 48, 0];
+  for (const job of cfg.jobsCfg.jobs) {
+    for (let i = 0; i < job.tiers.length; i++) {
+      const tier = job.tiers[i] as (typeof job.tiers)[number] & {
+        workFromPrev?: number;
+        worksToPromote?: number;
+      };
+      if (tier.worksToPromote === undefined) {
+        const next = job.tiers[i + 1];
+        tier.worksToPromote =
+          next?.workFromPrev && next.workFromPrev > 0
+            ? next.workFromPrev
+            : (defaults[i] ?? 0);
+      }
+      delete tier.workFromPrev;
+    }
+  }
+}
+
 function migrateHireWash(cfg: SimConfig): void {
   if (cfg.washKit.staminaGain === undefined) {
     cfg.washKit.staminaGain = DEFAULT_CONFIG.washKit.staminaGain;
@@ -127,6 +147,10 @@ function migratePayAndGacha(cfg: SimConfig): void {
       s.maxPayYuanPerDay = 0;
       s.maxPayYuanTotal = 0;
     }
+    if (s.collectJobs === undefined) {
+      s.collectJobs =
+        DEFAULT_CONFIG.strategies.find((d) => d.id === s.id)?.collectJobs ?? true;
+    }
   }
 }
 
@@ -136,6 +160,7 @@ export function normalizeLoadedConfig(patch: Partial<SimConfig>): SimConfig {
   migrateStrategies(config);
   migrateStageConfig(config);
   migrateOutfitConfig(config);
+  migrateJobTiers(config);
   migrateHireWash(config);
   migratePayAndGacha(config);
   return config;

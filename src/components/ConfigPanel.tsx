@@ -281,14 +281,14 @@ export function ConfigPanel({
                   <th>武≥</th>
                   <th>智≥</th>
                   <th>魅≥</th>
-                  <th>经验次数</th>
+                  <th>本档打工次数</th>
                 </tr>
               </thead>
               <tbody>
                 {job.tiers.map((tier, ti) => (
                   <tr key={ti}>
                     <td className="name-cell">{tier.name}</td>
-                    {(['wu', 'zhi', 'mei', 'workFromPrev'] as const).map((field) => (
+                    {(['wu', 'zhi', 'mei', 'worksToPromote'] as const).map((field) => (
                       <td key={field}>
                         <CellInput
                           value={tier[field]}
@@ -966,6 +966,16 @@ function StrategyEditor({
             onChange={(e) => onChange((s) => (s.useHire = e.target.checked))}
           />
           主动雇佣
+        </label>
+      </Row>
+      <Row>
+        <label className="checkbox-field">
+          <input
+            type="checkbox"
+            checked={strat.collectJobs}
+            onChange={(e) => onChange((s) => (s.collectJobs = e.target.checked))}
+          />
+          满级后横向收集其他职业（从见习打工起算，须攒工作经验；属性够则少进修）
         </label>
       </Row>
       <Row>

@@ -61,7 +61,10 @@ export interface JobTier {
   wu: number; // 0 表示无要求
   zhi: number;
   mei: number;
-  workFromPrev: number; // 上一级别工作经验要求
+  /** @deprecated 请用 worksToPromote；加载时会自动迁移 */
+  workFromPrev?: number;
+  /** 在本档累计打工此次数后，且下一档属性达标，方可晋升 */
+  worksToPromote: number;
   payRow: number; // 指向 payRows 的索引
 }
 
@@ -199,6 +202,7 @@ export interface StrategyConfig {
   adventuresPerDay: number;
   pksPerDay: number;
   targetJobId: string;
+  collectJobs: boolean; // 主职业满级后横向收集其他职业（属性继承，缺口进修）
   useHire: boolean;
   goldReserve: number; // 金币安全线
   outfitProbs: [number, number]; // 每档新品的购买意愿概率 B/A
@@ -295,7 +299,7 @@ const dualJob = (
     wu: a === 'wu' ? ra : b === 'wu' ? rb : 0,
     zhi: a === 'zhi' ? ra : b === 'zhi' ? rb : 0,
     mei: a === 'mei' ? ra : b === 'mei' ? rb : 0,
-    workFromPrev: [0, 10, 18, 32, 48][i],
+    worksToPromote: [10, 18, 32, 48, 0][i],
     payRow: i,
   })),
 });
@@ -308,7 +312,7 @@ const singleJob = (id: string, name: string, attr: AttrKey, reqs: number[]): Job
     wu: attr === 'wu' ? v : 0,
     zhi: attr === 'zhi' ? v : 0,
     mei: attr === 'mei' ? v : 0,
-    workFromPrev: [0, 10, 18, 32, 48][i],
+    worksToPromote: [10, 18, 32, 48, 0][i],
     payRow: i,
   })),
 });
@@ -450,9 +454,9 @@ export const DEFAULT_CONFIG: SimConfig = {
         id: 'wanxiang',
         name: '🌌 万象之主',
         tiers: [
-          { name: '见习·小乞丐', wu: 0, zhi: 0, mei: 0, workFromPrev: 0, payRow: 5 },
-          { name: '高级·万象宗师', wu: 72, zhi: 72, mei: 72, workFromPrev: 32, payRow: 3 },
-          { name: '大师·万象之主', wu: 118, zhi: 118, mei: 118, workFromPrev: 48, payRow: 4 },
+          { name: '见习·小乞丐', wu: 0, zhi: 0, mei: 0, worksToPromote: 32, payRow: 5 },
+          { name: '高级·万象宗师', wu: 72, zhi: 72, mei: 72, worksToPromote: 48, payRow: 3 },
+          { name: '大师·万象之主', wu: 118, zhi: 118, mei: 118, worksToPromote: 0, payRow: 4 },
         ],
       },
     ],
@@ -551,6 +555,7 @@ export const DEFAULT_CONFIG: SimConfig = {
       adventuresPerDay: 0,
       pksPerDay: 0,
       targetJobId: 'mingxing',
+      collectJobs: false,
       useHire: false,
       goldReserve: 50,
       outfitProbs: [0.1, 0],
@@ -573,6 +578,7 @@ export const DEFAULT_CONFIG: SimConfig = {
       adventuresPerDay: 1,
       pksPerDay: 1,
       targetJobId: 'mingxing',
+      collectJobs: true,
       useHire: true,
       goldReserve: 50,
       outfitProbs: [0.25, 0.08],
@@ -595,6 +601,7 @@ export const DEFAULT_CONFIG: SimConfig = {
       adventuresPerDay: 2,
       pksPerDay: 3,
       targetJobId: 'huajia',
+      collectJobs: true,
       useHire: true,
       goldReserve: 50,
       outfitProbs: [0.45, 0.25],
@@ -617,6 +624,7 @@ export const DEFAULT_CONFIG: SimConfig = {
       adventuresPerDay: 5,
       pksPerDay: 6,
       targetJobId: 'wushu',
+      collectJobs: true,
       useHire: true,
       goldReserve: 50,
       outfitProbs: [0.65, 0.5],
@@ -639,6 +647,7 @@ export const DEFAULT_CONFIG: SimConfig = {
       adventuresPerDay: 8,
       pksPerDay: 10,
       targetJobId: 'wushu',
+      collectJobs: true,
       useHire: true,
       goldReserve: 50,
       outfitProbs: [0.85, 0.75],

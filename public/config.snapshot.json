@@ -421,40 +421,40 @@
               "wu": 0,
               "zhi": 14,
               "mei": 24,
-              "workFromPrev": 0,
-              "payRow": 0
+              "payRow": 0,
+              "worksToPromote": 10
             },
             {
               "name": "初级",
               "wu": 0,
               "zhi": 22,
               "mei": 42,
-              "workFromPrev": 10,
-              "payRow": 1
+              "payRow": 1,
+              "worksToPromote": 18
             },
             {
               "name": "中级",
               "wu": 0,
               "zhi": 38,
               "mei": 74,
-              "workFromPrev": 18,
-              "payRow": 2
+              "payRow": 2,
+              "worksToPromote": 32
             },
             {
               "name": "高级",
               "wu": 0,
               "zhi": 68,
               "mei": 130,
-              "workFromPrev": 32,
-              "payRow": 3
+              "payRow": 3,
+              "worksToPromote": 48
             },
             {
               "name": "大师",
               "wu": 0,
               "zhi": 112,
               "mei": 220,
-              "workFromPrev": 48,
-              "payRow": 4
+              "payRow": 4,
+              "worksToPromote": 0
             }
           ]
         },
@@ -467,40 +467,40 @@
               "wu": 14,
               "zhi": 24,
               "mei": 0,
-              "workFromPrev": 0,
-              "payRow": 0
+              "payRow": 0,
+              "worksToPromote": 10
             },
             {
               "name": "初级",
               "wu": 22,
               "zhi": 42,
               "mei": 0,
-              "workFromPrev": 10,
-              "payRow": 1
+              "payRow": 1,
+              "worksToPromote": 18
             },
             {
               "name": "中级",
               "wu": 38,
               "zhi": 74,
               "mei": 0,
-              "workFromPrev": 18,
-              "payRow": 2
+              "payRow": 2,
+              "worksToPromote": 32
             },
             {
               "name": "高级",
               "wu": 68,
               "zhi": 130,
               "mei": 0,
-              "workFromPrev": 32,
-              "payRow": 3
+              "payRow": 3,
+              "worksToPromote": 48
             },
             {
               "name": "大师",
               "wu": 112,
               "zhi": 220,
               "mei": 0,
-              "workFromPrev": 48,
-              "payRow": 4
+              "payRow": 4,
+              "worksToPromote": 0
             }
           ]
         },
@@ -513,40 +513,40 @@
               "wu": 0,
               "zhi": 22,
               "mei": 16,
-              "workFromPrev": 0,
-              "payRow": 0
+              "payRow": 0,
+              "worksToPromote": 10
             },
             {
               "name": "初级",
               "wu": 0,
               "zhi": 38,
               "mei": 27,
-              "workFromPrev": 10,
-              "payRow": 1
+              "payRow": 1,
+              "worksToPromote": 18
             },
             {
               "name": "中级",
               "wu": 0,
               "zhi": 66,
               "mei": 48,
-              "workFromPrev": 18,
-              "payRow": 2
+              "payRow": 2,
+              "worksToPromote": 32
             },
             {
               "name": "高级",
               "wu": 0,
               "zhi": 116,
               "mei": 88,
-              "workFromPrev": 32,
-              "payRow": 3
+              "payRow": 3,
+              "worksToPromote": 48
             },
             {
               "name": "大师",
               "wu": 0,
               "zhi": 192,
               "mei": 150,
-              "workFromPrev": 48,
-              "payRow": 4
+              "payRow": 4,
+              "worksToPromote": 0
             }
           ]
         },
@@ -559,40 +559,40 @@
               "wu": 22,
               "zhi": 16,
               "mei": 0,
-              "workFromPrev": 0,
-              "payRow": 0
+              "payRow": 0,
+              "worksToPromote": 10
             },
             {
               "name": "初级",
               "wu": 38,
               "zhi": 27,
               "mei": 0,
-              "workFromPrev": 10,
-              "payRow": 1
+              "payRow": 1,
+              "worksToPromote": 18
             },
             {
               "name": "中级",
               "wu": 66,
               "zhi": 48,
               "mei": 0,
-              "workFromPrev": 18,
-              "payRow": 2
+              "payRow": 2,
+              "worksToPromote": 32
             },
             {
               "name": "高级",
               "wu": 116,
               "zhi": 88,
               "mei": 0,
-              "workFromPrev": 32,
-              "payRow": 3
+              "payRow": 3,
+              "worksToPromote": 48
             },
             {
               "name": "大师",
               "wu": 192,
               "zhi": 150,
               "mei": 0,
-              "workFromPrev": 48,
-              "payRow": 4
+              "payRow": 4,
+              "worksToPromote": 0
             }
           ]
         },
@@ -605,40 +605,40 @@
               "wu": 40,
               "zhi": 0,
               "mei": 0,
-              "workFromPrev": 0,
-              "payRow": 0
+              "payRow": 0,
+              "worksToPromote": 10
             },
             {
               "name": "初级",
               "wu": 68,
               "zhi": 0,
               "mei": 0,
-              "workFromPrev": 10,
-              "payRow": 1
+              "payRow": 1,
+              "worksToPromote": 18
             },
             {
               "name": "中级",
               "wu": 118,
               "zhi": 0,
               "mei": 0,
-              "workFromPrev": 18,
-              "payRow": 2
+              "payRow": 2,
+              "worksToPromote": 32
             },
             {
               "name": "高级",
               "wu": 210,
               "zhi": 0,
               "mei": 0,
-              "workFromPrev": 32,
-              "payRow": 3
+              "payRow": 3,
+              "worksToPromote": 48
             },
             {
               "name": "大师",
               "wu": 330,
               "zhi": 0,
               "mei": 0,
-              "workFromPrev": 48,
-              "payRow": 4
+              "payRow": 4,
+              "worksToPromote": 0
             }
           ]
         },
@@ -651,40 +651,40 @@
               "wu": 0,
               "zhi": 40,
               "mei": 0,
-              "workFromPrev": 0,
-              "payRow": 0
+              "payRow": 0,
+              "worksToPromote": 10
             },
             {
               "name": "初级",
               "wu": 0,
               "zhi": 68,
               "mei": 0,
-              "workFromPrev": 10,
-              "payRow": 1
+              "payRow": 1,
+              "worksToPromote": 18
             },
             {
               "name": "中级",
               "wu": 0,
               "zhi": 118,
               "mei": 0,
-              "workFromPrev": 18,
-              "payRow": 2
+              "payRow": 2,
+              "worksToPromote": 32
             },
             {
               "name": "高级",
               "wu": 0,
               "zhi": 210,
               "mei": 0,
-              "workFromPrev": 32,
-              "payRow": 3
+              "payRow": 3,
+              "worksToPromote": 48
             },
             {
               "name": "大师",
               "wu": 0,
               "zhi": 330,
               "mei": 0,
-              "workFromPrev": 48,
-              "payRow": 4
+              "payRow": 4,
+              "worksToPromote": 0
             }
           ]
         },
@@ -697,40 +697,40 @@
               "wu": 0,
               "zhi": 0,
               "mei": 40,
-              "workFromPrev": 0,
-              "payRow": 0
+              "payRow": 0,
+              "worksToPromote": 10
             },
             {
               "name": "初级",
               "wu": 0,
               "zhi": 0,
               "mei": 68,
-              "workFromPrev": 10,
-              "payRow": 1
+              "payRow": 1,
+              "worksToPromote": 18
             },
             {
               "name": "中级",
               "wu": 0,
               "zhi": 0,
               "mei": 118,
-              "workFromPrev": 18,
-              "payRow": 2
+              "payRow": 2,
+              "worksToPromote": 32
             },
             {
               "name": "高级",
               "wu": 0,
               "zhi": 0,
               "mei": 210,
-              "workFromPrev": 32,
-              "payRow": 3
+              "payRow": 3,
+              "worksToPromote": 48
             },
             {
               "name": "大师",
               "wu": 0,
               "zhi": 0,
               "mei": 330,
-              "workFromPrev": 48,
-              "payRow": 4
+              "payRow": 4,
+              "worksToPromote": 0
             }
           ]
         },
@@ -743,24 +743,24 @@
               "wu": 0,
               "zhi": 0,
               "mei": 0,
-              "workFromPrev": 0,
-              "payRow": 5
+              "payRow": 5,
+              "worksToPromote": 32
             },
             {
               "name": "高级·万象宗师",
               "wu": 72,
               "zhi": 72,
               "mei": 72,
-              "workFromPrev": 32,
-              "payRow": 3
+              "payRow": 3,
+              "worksToPromote": 18
             },
             {
               "name": "大师·万象之主",
               "wu": 118,
               "zhi": 118,
               "mei": 118,
-              "workFromPrev": 48,
-              "payRow": 4
+              "payRow": 4,
+              "worksToPromote": 32
             }
           ]
         }
@@ -966,7 +966,8 @@
         "gachaFloor": 99999,
         "rechargeForGacha": false,
         "maxPayYuanPerDay": 0,
-        "maxPayYuanTotal": 0
+        "maxPayYuanTotal": 0,
+        "collectJobs": false
       },
       {
         "id": "casual",
@@ -991,7 +992,8 @@
         "gachaFloor": 600,
         "rechargeForGacha": false,
         "maxPayYuanPerDay": 0,
-        "maxPayYuanTotal": 0
+        "maxPayYuanTotal": 0,
+        "collectJobs": true
       },
       {
         "id": "normal",
@@ -1016,7 +1018,8 @@
         "gachaFloor": 1200,
         "rechargeForGacha": true,
         "maxPayYuanPerDay": 10,
-        "maxPayYuanTotal": 128
+        "maxPayYuanTotal": 128,
+        "collectJobs": true
       },
       {
         "id": "grinder",
@@ -1041,7 +1044,8 @@
         "gachaFloor": 1800,
         "rechargeForGacha": false,
         "maxPayYuanPerDay": 0,
-        "maxPayYuanTotal": 0
+        "maxPayYuanTotal": 0,
+        "collectJobs": true
       },
       {
         "id": "hardcore",
@@ -1066,7 +1070,8 @@
         "gachaFloor": 2400,
         "rechargeForGacha": true,
         "maxPayYuanPerDay": 50,
-        "maxPayYuanTotal": 648
+        "maxPayYuanTotal": 648,
+        "collectJobs": true
       }
     ]
   },

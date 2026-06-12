@@ -21,7 +21,9 @@ export function strategySummaryLines(strat: StrategyConfig, config: SimConfig): 
       : `约 ${strat.dailyActions} 次/天（部分天 +1 次）`;
 
   lines.push(`日均行动 ${actions}：未毕业上课，毕业后进修或打工`);
-  lines.push(`打工偏好 ${ORDER_LABELS[strat.orderPref]} · 目标职业 ${jobName(config, strat.targetJobId)}`);
+  lines.push(
+    `打工偏好 ${ORDER_LABELS[strat.orderPref]} · 目标职业 ${jobName(config, strat.targetJobId)}${strat.collectJobs ? '（满级后转职收集，从见习打工起算）' : ''}`,
+  );
   lines.push(
     `冒险 ${strat.adventuresPerDay} 次/天 · PK ${strat.pksPerDay} 次/天 · 主动雇佣 ${strat.useHire ? '开' : '关'}`,
   );
