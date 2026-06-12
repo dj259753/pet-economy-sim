@@ -84,13 +84,12 @@ export interface HireConfig {
   /** 被雇佣者上线概率：增量收益（本金×加成%）由雇主与被雇者平分 */
   interruptProb: number;
   bonusByTier: Range[]; // 被雇佣者档位对应的加成%区间（见习8~28% … 大师24~44%）
-  startupGoldByTier: [number, number, number, number, number]; // 启动费（金币）→ 从雇主扣、进被雇者口袋
   interruptSplit: number; // 上线时雇员分得增量部分的比例，默认 0.5
 }
 
 export interface HiredByConfig {
   dailyLimit: number; // 每日可被他人雇佣的次数上限
-  /** 被动被雇时假设的雇主打工本金（按四订单均值）；0=用本档位 payRows 四类订单中值 */
+  /** 被动被雇时假设的雇主打工本金（各档快单固定收益） */
   referenceBaseByTier: [number, number, number, number, number];
 }
 
@@ -463,13 +462,12 @@ export const DEFAULT_CONFIG: SimConfig = {
     dailyLimit: 6,
     interruptProb: 0.3,
     bonusByTier: [r(8, 28), r(12, 32), r(16, 36), r(20, 40), r(24, 44)],
-    startupGoldByTier: [4, 6, 9, 12, 15],
     interruptSplit: 0.5,
   },
 
   hiredBy: {
-    dailyLimit: 6,
-    referenceBaseByTier: [0, 0, 0, 0, 0],
+    dailyLimit: 5,
+    referenceBaseByTier: [40, 55, 70, 85, 100],
   },
 
   // ====== 以下为文档留白、由模拟器给出的建议值（全部可调） ======

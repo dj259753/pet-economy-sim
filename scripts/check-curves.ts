@@ -38,6 +38,6 @@ for (const strat of cfg.strategies.filter((s) => s.enabled)) {
     `收入 打工${Math.round(inc.work)} 雇佣${Math.round(inc.hire)} 被雇${Math.round(inc.hiredBy)} 抽奖${Math.round(inc.gacha)}`,
   );
   console.log(
-    `支出 进修${Math.round(exp.training)} 装扮${Math.round(exp.outfit)} 抽奖${Math.round(exp.gacha)} 雇佣费${Math.round(exp.hireCost)}`,
+    `支出 进修${Math.round(exp.training)} 装扮${Math.round(exp.outfit)} 抽奖${Math.round(exp.gacha)}`,
   );
 }

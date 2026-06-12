@@ -90,35 +90,21 @@ function migrateHireWash(cfg: SimConfig): void {
   const hire = cfg.hire as SimConfig['hire'] & {
     costYuanByTier?: number[];
     startupYuanByTier?: number[];
+    startupGoldByTier?: number[];
   };
-  if (!hire.startupGoldByTier && hire.startupYuanByTier) {
-    hire.startupGoldByTier = hire.startupYuanByTier as [
-      number,
-      number,
-      number,
-      number,
-      number,
-    ];
-    delete hire.startupYuanByTier;
-  }
-  if (!hire.startupGoldByTier && hire.costYuanByTier) {
-    hire.startupGoldByTier = hire.costYuanByTier as [
-      number,
-      number,
-      number,
-      number,
-      number,
-    ];
-    delete hire.costYuanByTier;
-  }
-  if (!hire.startupGoldByTier) {
-    hire.startupGoldByTier = structuredClone(DEFAULT_CONFIG.hire.startupGoldByTier);
-  }
+  delete hire.startupGoldByTier;
+  delete hire.startupYuanByTier;
+  delete hire.costYuanByTier;
   if (hire.interruptSplit === undefined) {
     hire.interruptSplit = DEFAULT_CONFIG.hire.interruptSplit;
   }
   if (!cfg.hiredBy.referenceBaseByTier) {
     cfg.hiredBy.referenceBaseByTier = structuredClone(DEFAULT_CONFIG.hiredBy.referenceBaseByTier);
+  } else if (cfg.hiredBy.referenceBaseByTier.every((v) => v === 0)) {
+    cfg.hiredBy.referenceBaseByTier = structuredClone(DEFAULT_CONFIG.hiredBy.referenceBaseByTier);
+  }
+  if (cfg.hiredBy.dailyLimit === undefined) {
+    cfg.hiredBy.dailyLimit = DEFAULT_CONFIG.hiredBy.dailyLimit;
   }
 }
 

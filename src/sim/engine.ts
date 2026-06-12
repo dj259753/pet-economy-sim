@@ -66,7 +66,6 @@ export interface ExpenseBreakdown {
   pk: number;
   outfit: number;
   gacha: number; // 抽奖花费
-  hireCost: number; // 主动雇佣一次性花费（金币）
 }
 
 export const INCOME_KEYS: { key: keyof IncomeBreakdown; name: string; color: string }[] = [
@@ -90,7 +89,6 @@ export const EXPENSE_KEYS: { key: keyof ExpenseBreakdown; name: string; color: s
   { key: 'pk', name: 'PK损失', color: '#e11d48' },
   { key: 'outfit', name: '装扮', color: '#0284c7' },
   { key: 'gacha', name: '抽奖', color: '#a21caf' },
-  { key: 'hireCost', name: '雇佣费', color: '#64748b' },
 ];
 
 export interface DayRecord {
@@ -168,7 +166,6 @@ const zeroExpense = (): ExpenseBreakdown => ({
   pk: 0,
   outfit: 0,
   gacha: 0,
-  hireCost: 0,
 });
 
 function addBreakdown<T extends { [K in keyof T]: number }>(total: T, day: T): void {
@@ -400,9 +397,6 @@ export function runSim(
 
   const hiredTier = (payRow: number): number => hireTierOf(payRow);
 
-  const startupGold = (payRow: number): number =>
-    cfg.hire.startupGoldByTier[hiredTier(payRow)] ?? 0;
-
   /** 被雇者加成%（0~1） */
   const sampleHirePct = (payRow: number): number =>
     sampleRange(rng, cfg.hire.bonusByTier[hiredTier(payRow)]) / 100;
@@ -437,14 +431,11 @@ export function runSim(
     return inc - emp;
   };
 
-  const referenceEmployerBase = (payRow: number): number => {
-    const tier = hiredTier(payRow);
+  const referenceEmployerBase = (tier: number): number => {
     const ref = cfg.hiredBy.referenceBaseByTier[tier];
     if (ref > 0) return ref;
-    const row = cfg.jobsCfg.payRows[payRow];
-    return (
-      (rangeMid(row.kuai) + rangeMid(row.wen) + rangeMid(row.guaji) + rangeMid(row.du)) / 4
-    );
+    const payRow = tier > 4 ? 0 : tier;
+    return rangeMid(cfg.jobsCfg.payRows[payRow].kuai);
   };
 
   const bestOrderKey = (payRow: number, canHire: boolean): OrderKey => {
@@ -490,19 +481,15 @@ export function runSim(
 
   const doWork = (day: number): boolean => {
     const payRow = currentPayRow();
-    const wantsHire = mods.hire && strat.useHire && st.hiresToday < cfg.hire.dailyLimit;
-    const startup = wantsHire ? startupGold(payRow) : 0;
-    const canHire = wantsHire && st.gold >= startup;
+    const canHire = mods.hire && strat.useHire && st.hiresToday < cfg.hire.dailyLimit;
     const orderKey: OrderKey =
       strat.orderPref === 'auto' ? bestOrderKey(payRow, canHire) : strat.orderPref;
     const meta = cfg.jobsCfg.orderMeta[orderKey];
-    if (!ensureStamina(meta.stamina, canHire ? startup : 0)) return false;
+    if (!ensureStamina(meta.stamina, 0)) return false;
     st.stamina -= meta.stamina;
     const base = sampleRange(rng, cfg.jobsCfg.payRows[payRow][orderKey]);
     let hireBonus = 0;
     if (canHire) {
-      st.gold -= startup;
-      st.expense.hireCost += startup;
       st.hiresToday++;
       hireBonus = resolveHireIncremental(base, payRow).employerBonus;
     }
@@ -605,18 +592,16 @@ export function runSim(
 
   /**
    * 被动被雇佣：他人雇我打工 n 次/天。
-   * 每次：启动费进我口袋；若我上线，再分得 雇主本金×我的加成%×interruptSplit。
+   * 若我上线，分得 雇主本金×我的加成%×interruptSplit。
    */
   const doHiredBy = (): void => {
     if (!mods.hiredBy || st.phase !== 3 || strat.beHiredPerDay <= 0) return;
     const payRow = currentPayRow();
     const tier = hiredTier(payRow);
-    const startup = startupGold(payRow);
-    const employerBase = referenceEmployerBase(payRow);
+    const employerBase = referenceEmployerBase(tier);
     const n = Math.min(strat.beHiredPerDay, cfg.hiredBy.dailyLimit);
     if (rng) {
       for (let i = 0; i < n; i++) {
-        earn('hiredBy', startup);
         if (rng() < strat.selfOnlineProb) {
           const pct = sampleRange(rng, cfg.hire.bonusByTier[tier]) / 100;
           earn('hiredBy', employerBase * pct * cfg.hire.interruptSplit);
@@ -624,7 +609,6 @@ export function runSim(
       }
     } else {
       const pctMid = hirePctMid(payRow);
-      earn('hiredBy', n * startup);
       earn(
         'hiredBy',
         n * strat.selfOnlineProb * employerBase * pctMid * cfg.hire.interruptSplit,

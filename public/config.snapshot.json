@@ -791,37 +791,16 @@
           "max": 44
         }
       ],
-      "startupGoldByTier": [
-        6,
-        9,
-        12,
-        15,
-        18
-      ],
-      "interruptSplit": 0.5,
-      "startupYuanByTier": [
-        4,
-        6,
-        9,
-        12,
-        15
-      ],
-      "costYuanByTier": [
-        4,
-        6,
-        9,
-        12,
-        15
-      ]
+      "interruptSplit": 0.5
     },
     "hiredBy": {
       "dailyLimit": 5,
       "referenceBaseByTier": [
-        0,
-        0,
-        0,
-        0,
-        0
+        40,
+        55,
+        70,
+        85,
+        100
       ]
     },
     "adventure": {

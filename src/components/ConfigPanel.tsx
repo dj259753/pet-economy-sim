@@ -406,7 +406,6 @@ export function ConfigPanel({
               <th>被雇者档位</th>
               <th>加成min%</th>
               <th>加成max%</th>
-              <th>启动费(金币)</th>
             </tr>
           </thead>
           <tbody>
@@ -425,18 +424,12 @@ export function ConfigPanel({
                     onChange={(v) => update((d) => (d.hire.bonusByTier[ti].max = v))}
                   />
                 </td>
-                <td>
-                  <CellInput
-                    value={config.hire.startupGoldByTier[ti]}
-                    onChange={(v) => update((d) => (d.hire.startupGoldByTier[ti] = v))}
-                  />
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
         <Hint>
-          主动雇佣：雇主付启动费→被雇者口袋；打工本金全归雇主；增量=本金×加成%。未上线则雇主拿全部增量；上线则增量按
+          主动雇佣：打工本金全归雇主；增量=本金×加成%。未上线则雇主拿全部增量；上线则增量按
           {Math.round(config.hire.interruptSplit * 100)}%:{Math.round((1 - config.hire.interruptSplit) * 100)}%
           分给被雇者与雇主（雇主另有全部本金）。
         </Hint>
@@ -453,8 +446,7 @@ export function ConfigPanel({
           <thead>
             <tr>
               <th>档位</th>
-              <th>假设雇主本金</th>
-              <th>说明</th>
+              <th>假设雇主本金（快单）</th>
             </tr>
           </thead>
           <tbody>
@@ -467,13 +459,12 @@ export function ConfigPanel({
                     onChange={(v) => update((d) => (d.hiredBy.referenceBaseByTier[ti] = v))}
                   />
                 </td>
-                <td className="name-cell">{base > 0 ? '固定' : '四类订单均值'}</td>
               </tr>
             ))}
           </tbody>
         </table>
         <Hint>
-          被他人雇佣时若上线打断，分得雇主本次加成的一半。每个策略的"每日被雇佣次数"和"上线打断概率"在策略区配置；雇主收益按与自己同档位估算。
+          被他人雇佣时若上线，分得「雇主本金×我的加成%×{Math.round(config.hire.interruptSplit * 100)}%」。本金默认各档快单固定收益；每日被雇佣次数与上线概率在策略区配置。
         </Hint>
       </Section>
 
